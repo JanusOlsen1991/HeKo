@@ -16,11 +16,11 @@ public class Uddannelse {
 	
 	/**
 	 * 
-	 * @param uddannelse : en der udbyder uddannelsesretningen
+	 * @param uddannelsessted : en der udbyder uddannelsesretningen
 	 * @param uddannelsesretning : Den bestemte uddannelsesretning den studerende følger.
 	 */
-	public Uddannelse(String uddannelses, String uddannelsesretning, SimpleDateFormat påbegyndtDato, SimpleDateFormat forventetAfsluttetDato) {
-		this.uddannelsessted = uddannelses;
+	public Uddannelse(String uddannelsessted, String uddannelsesretning, SimpleDateFormat påbegyndtDato, SimpleDateFormat forventetAfsluttetDato) {
+		this.uddannelsessted = uddannelsessted;
 		this.uddannelsesretning = uddannelsesretning;
 		this.forventetAfsluttetDato = forventetAfsluttetDato;
 		this.påbegyndtDato = påbegyndtDato;
