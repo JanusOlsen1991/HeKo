@@ -1,5 +1,7 @@
 package view;
 
+import java.text.SimpleDateFormat;
+
 import controller.Controller;
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -22,6 +24,7 @@ import model.Værelsesudlejning;
 public class GUI{// extends Application {
 	private Scene scene;
 	Controller controller = new Controller();
+	GUI_PopUps popUp = new GUI_PopUps();
 
 //Skal indeholde både modeller og Controller objekter
 
@@ -39,7 +42,7 @@ public class GUI{// extends Application {
 		VBox venstreLayout = new VBox();
 		GridPane højreLayout = new GridPane();
 		borderP.setLeft(venstreLayout);
-		borderP.setRight(højreLayout);
+		borderP.setCenter(højreLayout);
 
 		// Buttons til venstre side af menuen
 		Button beboerlisteButton = new Button("Beboerliste");
@@ -67,7 +70,14 @@ public class GUI{// extends Application {
 		tView.getColumns().add(hvemColumn);
 
 		Button tilføjButton = new Button("Tilføj påmindelse");
+		tilføjButton.setOnAction( e-> popUp.createDeadline());
+		
 		Button fjernButton = new Button("Fjern påmindelse");
+		//TESTTTTTT
+		Deadline deadline = new Deadline(null,null,null);
+		fjernButton.setOnAction(e-> popUp.startStudiekontrol());
+		
+		
 		// Tilføjer til højre side af menuen
 		højreLayout.add(tView, 2, 3, 3, 6);
 		højreLayout.add(tilføjButton, 2, 10);
@@ -337,8 +347,8 @@ public class GUI{// extends Application {
 		tab6.setContent(tW6);
 
 		tP.getTabs().addAll(tab1, tab2, tab3, tab4, tab5, tab6);
-//		scene = new Scene(borderP, 900, 700);
-//		primaryStage.setScene(scene);
+		scene = new Scene(borderP, 900, 700);
+		primaryStage.setScene(scene);
 	}
 
 	public void fremlejeMenu(Stage primaryStage) {

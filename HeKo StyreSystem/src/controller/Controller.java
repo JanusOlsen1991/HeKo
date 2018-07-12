@@ -1,5 +1,13 @@
 package controller;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 /**
  * Klassen binder modellageret sammen med brugerinteraktionen i viewet
  * @author Janus
@@ -7,11 +15,37 @@ package controller;
  */
 
 public class Controller {
-	//Skal indeholde alle modellerne
-	public void PrintIt(String s) {
-		System.out.println(s);
-	}
 	//Controller oprettes selv som et objekt i viewet
+	
+	
+	//Skal indeholde alle modellerne
+	public static void main(String[]args) {
+		// Herunder oprettes der et excel dokument
+	}
+	public void createExcelFile() { 
+	Workbook wb = new XSSFWorkbook();
+	
+	Sheet sheet1 = wb.createSheet("BeboerListe");
+	
+	try {
+		FileOutputStream stream = new FileOutputStream("test1.xlsx");
+		wb.write(stream);
+		stream.close();
+	}
+	
+	catch(Exception e){
+		e.printStackTrace();
+	} finally {
+		try {
+			wb.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	}
+	
 
 
 }
