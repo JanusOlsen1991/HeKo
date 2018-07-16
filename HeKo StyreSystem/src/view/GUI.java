@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import controller.Controller;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,6 +13,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -21,12 +24,12 @@ import model.Deadline;
 import model.Dispensation;
 import model.Værelsesudlejning;
 
-public class GUI{// extends Application {
+public class GUI {// extends Application {
 	private Scene scene;
 	Controller controller = new Controller();
 	GUI_PopUps popUp = new GUI_PopUps();
 
-//Skal indeholde både modeller og Controller objekter
+	// Skal indeholde både modeller og Controller objekter
 
 	/**
 	 * Metoden anvendes til at oprette "hovedmenuen" for programmet.
@@ -34,7 +37,7 @@ public class GUI{// extends Application {
 	 * @param primaryStage
 	 *            : is the stage given to set up the GUI
 	 */
-//	@Override
+	// @Override
 
 	public void hovedMenu(Stage primaryStage) throws Exception {
 		BorderPane borderP = new BorderPane();
@@ -70,14 +73,13 @@ public class GUI{// extends Application {
 		tView.getColumns().add(hvemColumn);
 
 		Button tilføjButton = new Button("Tilføj påmindelse");
-		tilføjButton.setOnAction( e-> popUp.createDeadline());
-		
+		tilføjButton.setOnAction(e -> popUp.createDeadline());
+
 		Button fjernButton = new Button("Fjern påmindelse");
-		//TESTTTTTT
-		Deadline deadline = new Deadline(null,null,null);
-		fjernButton.setOnAction(e-> popUp.startStudiekontrol());
-		
-		
+		// TESTTTTTT
+		Deadline deadline = new Deadline(null, null, null);
+		fjernButton.setOnAction(e -> popUp.afslutStudiekontrol(null, null));
+
 		// Tilføjer til højre side af menuen
 		højreLayout.add(tView, 2, 3, 3, 6);
 		højreLayout.add(tilføjButton, 2, 10);
@@ -88,10 +90,12 @@ public class GUI{// extends Application {
 		primaryStage.show();
 
 	}
-/**
- * 
- * @param primaryStage : main stage
- */
+
+	/**
+	 * 
+	 * @param primaryStage
+	 *            : main stage
+	 */
 	private void værelsesUdlejning(Stage primaryStage) {
 		BorderPane borderP = new BorderPane();
 		// venstre side
@@ -122,6 +126,20 @@ public class GUI{// extends Application {
 		TableView<Værelsesudlejning> tW1 = new TableView<Værelsesudlejning>();
 		TableView<Værelsesudlejning> tW2 = new TableView<Værelsesudlejning>();
 
+		// Herunder oprettes en metode til at håndtere dobbeltklik
+		tW1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if (event.getButton().equals(MouseButton.PRIMARY)) {
+					if (event.getClickCount() == 2) {
+						System.out.println("Double clicked");
+					}
+
+				}
+
+			}
+		});
 
 		TableColumn værelseColumn = new TableColumn("Værelse");
 		TableColumn navnColumn = new TableColumn("navn");
@@ -129,20 +147,22 @@ public class GUI{// extends Application {
 		TableColumn behandletDatoColumn = new TableColumn("Behandlingsdato");
 		TableColumn behandlerInitialerColumn = new TableColumn("Behandler Initialer");
 
-		tW1.getColumns().addAll(indflytningColumn,værelseColumn, navnColumn, behandletDatoColumn, behandlerInitialerColumn);
-		tW2.getColumns().addAll(indflytningColumn,værelseColumn, navnColumn, behandletDatoColumn, behandlerInitialerColumn);
-		
+		tW1.getColumns().addAll(indflytningColumn, værelseColumn, navnColumn, behandletDatoColumn,
+				behandlerInitialerColumn);
+		tW2.getColumns().addAll(indflytningColumn, værelseColumn, navnColumn, behandletDatoColumn,
+				behandlerInitialerColumn);
+
 		tab1.setContent(tW1);
 		tab2.setContent(tW2);
-		
+
 		scene = new Scene(borderP, 900, 700);
 		primaryStage.setScene(scene);
 	}
 
 	private void dispensationsMenu(Stage primaryStage) {
-		
+
 		BorderPane borderP = new BorderPane();
-		
+
 		// Venstre side af menuen
 		Button tilbageButton = new Button("Tilbage");
 		tilbageButton.setOnAction(e -> {
@@ -156,27 +176,25 @@ public class GUI{// extends Application {
 
 		VBox vb = new VBox(tilbageButton);
 		borderP.setLeft(vb);
-		
+
 		TabPane tP = new TabPane();
 		borderP.setCenter(tP);
-		
+
 		TableView<Dispensation> tW = new TableView<Dispensation>();
 		TableColumn værelseColumn = new TableColumn("Værelse");
 		TableColumn navnColumn = new TableColumn("Navn");
 		TableColumn hovedMenudatoColumn = new TableColumn("hovedMenu dato");
 		TableColumn slutDatoColumn = new TableColumn("Slut dato");
 		TableColumn antalBetingelserColumn = new TableColumn("Antal betingelser");
-		
-		tW.getColumns().addAll(værelseColumn,navnColumn,hovedMenudatoColumn,slutDatoColumn,antalBetingelserColumn);
-		
+
+		tW.getColumns().addAll(værelseColumn, navnColumn, hovedMenudatoColumn, slutDatoColumn, antalBetingelserColumn);
+
 		Tab tab1 = new Tab("Aktive dispensationer");
 		tab1.setClosable(false);
 		tab1.setContent(tW);
 		tP.getTabs().add(tab1);
-		
 
-		
-		scene = new Scene(borderP, 900,700);
+		scene = new Scene(borderP, 900, 700);
 		primaryStage.setScene(scene);
 	}
 
@@ -200,8 +218,8 @@ public class GUI{// extends Application {
 		// Midten
 		TabPane tP = new TabPane();
 		borderP.setCenter(tP);
-		
-		//Tabs herunder skal oprettes KUN "når de er i gang".
+
+		// Tabs herunder skal oprettes KUN "når de er i gang".
 
 		Tab tab1 = new Tab("Alle igangværende studiekontroller");
 		tab1.setClosable(false);
@@ -215,7 +233,7 @@ public class GUI{// extends Application {
 		tab5.setClosable(false);
 		Tab tab6 = new Tab("Maj");
 		tab6.setClosable(false);
-		//...
+		// ...
 
 		TableView<Beboer> tW1 = new TableView<Beboer>();
 		TableView<Beboer> tW2 = new TableView<Beboer>();
@@ -227,7 +245,7 @@ public class GUI{// extends Application {
 		// kolloner til Tableviews
 		TableColumn værelseColumn = new TableColumn("Værelse");
 		TableColumn navnColumn = new TableColumn("Navn");
-//		TableColumn indflytningColumn = new TableColumn("indflytningsdato");
+		// TableColumn indflytningColumn = new TableColumn("indflytningsdato");
 		TableColumn uddannelseColumn = new TableColumn("Uddannelse");
 		TableColumn uddStedColumn = new TableColumn("Uddannelsessted");
 		TableColumn påbegyndtUddColumn = new TableColumn("Uddannelse påbegyndt");
@@ -239,18 +257,18 @@ public class GUI{// extends Application {
 																						// gang.
 
 		// TableViews oprettes med kollonnerne
-		tW1.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
-		tW2.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
-		tW3.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
-		tW4.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
-		tW5.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
-		tW6.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn,
-				afslutningUddColumn, lejeaftalensUdløbColumn);
+		tW1.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
+		tW2.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
+		tW3.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
+		tW4.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
+		tW5.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
+		tW6.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
+				lejeaftalensUdløbColumn);
 
 		// Første tab: Alle beboere
 
@@ -264,7 +282,7 @@ public class GUI{// extends Application {
 		tP.getTabs().addAll(tab1, tab2, tab3, tab4, tab5, tab6);
 		scene = new Scene(borderP, 900, 700);
 		primaryStage.setScene(scene);
-		
+
 	}
 
 	public void beboerlisteMenu(Stage primaryStage) {
@@ -376,13 +394,16 @@ public class GUI{// extends Application {
 		TableColumn fremlejetagerNavnColumn = new TableColumn("Fremlejetagers navn");
 		TableColumn hovedMenuDatoColumn = new TableColumn("hovedMenu dato");
 		TableColumn slutDatoColumn = new TableColumn("Slut Dato");
-//		TableColumn påbegyndtUddColumn = new TableColumn("Uddannelse påbegyndt");
-//		TableColumn afslutningUddColumn = new TableColumn("Uddannelse forventes afsluttet");
-//		TableColumn lejeaftalensUdløbColumn = new TableColumn("Lejeaftalens udløb");
-		// Ovenstående er informationer der skal tastes ind, men ikke noget der skal fremgå på siden.
-		
-		tW.getColumns().addAll(værelseColumn,fremlejerColumn,fremlejetagerNavnColumn,hovedMenuDatoColumn,slutDatoColumn);
-		
+		// TableColumn påbegyndtUddColumn = new TableColumn("Uddannelse påbegyndt");
+		// TableColumn afslutningUddColumn = new TableColumn("Uddannelse forventes
+		// afsluttet");
+		// TableColumn lejeaftalensUdløbColumn = new TableColumn("Lejeaftalens udløb");
+		// Ovenstående er informationer der skal tastes ind, men ikke noget der skal
+		// fremgå på siden.
+
+		tW.getColumns().addAll(værelseColumn, fremlejerColumn, fremlejetagerNavnColumn, hovedMenuDatoColumn,
+				slutDatoColumn);
+
 		borderP.setCenter(tW);
 		scene = new Scene(borderP, 900, 700);
 		primaryStage.setScene(scene);

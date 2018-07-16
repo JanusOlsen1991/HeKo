@@ -1,15 +1,20 @@
 package view;
 
+import java.util.ArrayList;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Beboer;
 import model.Deadline;
 
 public class GUI_PopUps {
@@ -159,6 +164,9 @@ public class GUI_PopUps {
 		stage.show();
 		
 	}
+	/**
+	 * popUp menu til at tjekke studiekontrol af.
+	 */
 	public void modtagetStudiekontrol() {
 	stage.setTitle("Studiekontrol for beboer:");
 	
@@ -168,17 +176,73 @@ public class GUI_PopUps {
 	Label l2 = new Label("Navn");
 	Label l3 = new Label("Uddannelsessted");
 	Label l4 = new Label("Uddannelsesretning");
-	Label l5 = new Label("");
-	Label l6 = new Label();
-	Label l7 = new Label();
+	Label l5 = new Label("uddannelse påbegyndt:");
+	Label l6 = new Label("Forventet studieafslutning:");
+	Label l7 = new Label("Status på studiedokumentation");
+	
+	TextField værelse = new TextField();
+	TextField navn = new TextField();
+	TextField uddannelsessted = new TextField();
+	TextField uddannelsesretning = new TextField();
+	DatePicker uddStart = new DatePicker();
+	DatePicker uddSlut = new DatePicker();
+	ComboBox<String> kontrolstatus = new ComboBox<String>();
+	kontrolstatus.getItems().addAll("Godkendt", "Modtaget. Ikke godkendt", "Ikke modtaget");
+	kontrolstatus.setPromptText("Status...");
+	
+	Button gemButton = new Button("Gem ændringer");
+	Button annulerButton = new Button("Annuller");
 
+	layout.add(l1, 3, 3);
+	layout.add(l2, 3, 5);
+	layout.add(l3, 3, 7);
+	layout.add(l4, 3, 9);
+	layout.add(l5, 3, 11);
+	layout.add(l6, 3, 13);
+	layout.add(l7, 3, 15);
 	
-	
+	layout.add(værelse, 5, 3);
+	layout.add(navn, 5, 5);
+	layout.add(uddannelsessted, 5, 7);
+	layout.add(uddannelsesretning, 5, 9);
+	layout.add(uddStart, 5, 11);
+	layout.add(uddSlut, 5, 13);
+	layout.add(kontrolstatus, 5, 15);
+
+	layout.add(gemButton, 4, 17);
+	layout.add(annulerButton, 6, 17);
+
+
 	
 	Scene scene = new Scene(layout);
 	stage.setScene(scene);
 	stage.show();
 	}
+	public void afslutStudiekontrol(String måned, ArrayList arrayList) {
+		stage.setTitle("Afslut studiekontrol for " + måned);
+		GridPane layout = new GridPane();
+		
+		Label l1 = new Label("Er du sikker på du vil afslutte studiekontrollen for " + måned + "\nog sende de herunder listede beboeres oplysninger videre til boligselskabet?");
+		Button jaButton = new Button("Ja");
+		Button nejButton = new Button("Nej");
+		
+		TableColumn værelse = new TableColumn();	
+		TableColumn navn = new TableColumn();
+
+		TableView<Beboer> tView = new TableView();
+		tView.getColumns().addAll(værelse,navn);
+		
+		layout.add(l1, 3, 3, 5, 1);
+		
+		layout.add(tView, 3, 4, 3, 1);
+		layout.add(jaButton, 4, 6);
+		layout.add(nejButton, 6, 6);
+		
+		Scene scene = new Scene(layout);
+		stage.setScene(scene);
+		stage.show();
+	}
+	
 //	stage.setTitle("Påbegynd studiekontrol");
 //	GridPane layout = new GridPane();
 //	Scene scene = new Scene(layout);

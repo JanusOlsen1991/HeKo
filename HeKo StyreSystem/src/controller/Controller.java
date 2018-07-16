@@ -1,11 +1,17 @@
 package controller;
 
 import java.io.FileOutputStream;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import javafx.collections.ObservableList;
+import model.Beboer;
+import model.Deadline;
 
 
 /**
@@ -16,12 +22,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Controller {
 	//Controller oprettes selv som et objekt i viewet
+	private ObservableList<Beboer> beboere;
+	private ObservableList<Deadline> deadlines;
+	private ObservableList<Beboer> fremlejere;
+	private ObservableList<Studiekontrol> studiekontroller;
+	private ArrayList værelsesudlejning;
 	
 	
 	//Skal indeholde alle modellerne
 	public static void main(String[]args) {
-		// Herunder oprettes der et excel dokument
+		//Til testing
 	}
+	public Controller() {
+		//Skal ikke tage parametre, men indlæse fra Excel-fil og oprette de enkelte ObservableLists/ArrayLists.
+		
+	}
+	
 	public void createExcelFile() { 
 	Workbook wb = new XSSFWorkbook();
 	
@@ -45,7 +61,15 @@ public class Controller {
 	}
 	
 	}
-	
+	/**
+	 * 
+	 * @param antalKollonner antal kollonner i en observableList der skal fyldes
+	 * @return
+	 */
+	public ObservableList<?> getObservableList(int antalKollonner ) {
+		
+		return null;
+	}
 
 
 }
