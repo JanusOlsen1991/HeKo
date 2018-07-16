@@ -8,6 +8,7 @@ private String værelse;
 private Uddannelse uddannelse;
 private SimpleDateFormat indflytningsdato;
 private SimpleDateFormat lejeaftalensUdløb;
+private boolean studieaktiv;
 /**
  * @param navn : Beboerens navn
  * @param værelse : Værelsesnummer
@@ -52,6 +53,12 @@ public SimpleDateFormat getLejeaftalensUdløbl() {
 }
 public void setLejeaftalensUdløb(SimpleDateFormat sidsteStudiekontrol) {
 	this.lejeaftalensUdløb = sidsteStudiekontrol;
+}
+public boolean isStudieaktiv() {
+	return studieaktiv;
+}
+public void setStudieaktiv(boolean studieaktiv) {
+	this.studieaktiv = studieaktiv;
 }
 
 }
