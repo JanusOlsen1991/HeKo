@@ -1,6 +1,6 @@
 package model;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 /**
  * Uddannelsesklassen anvendes til at tilkendegive den studerendes uddannelsesforhold.
@@ -11,15 +11,15 @@ public class Uddannelse {
 	
 	private String uddannelsesretning;
 	private String uddannelsessted;
-	private SimpleDateFormat påbegyndtDato;
-	private SimpleDateFormat forventetAfsluttetDato;
+	private LocalDate påbegyndtDato;
+	private LocalDate forventetAfsluttetDato;
 	
 	/**
 	 * 
 	 * @param uddannelsessted : en der udbyder uddannelsesretningen
 	 * @param uddannelsesretning : Den bestemte uddannelsesretning den studerende følger.
 	 */
-	public Uddannelse(String uddannelsessted, String uddannelsesretning, SimpleDateFormat påbegyndtDato, SimpleDateFormat forventetAfsluttetDato) {
+	public Uddannelse(String uddannelsessted, String uddannelsesretning, LocalDate påbegyndtDato, LocalDate forventetAfsluttetDato) {
 		this.uddannelsessted = uddannelsessted;
 		this.uddannelsesretning = uddannelsesretning;
 		this.forventetAfsluttetDato = forventetAfsluttetDato;
@@ -32,22 +32,22 @@ public class Uddannelse {
 	public void setUddannelsesretning(String uddannelsesretning) {
 		this.uddannelsesretning = uddannelsesretning;
 	}
-	public String getUddannelses() {
+	public String getUddannelsessted() {
 		return uddannelsessted;
 	}
 	public void setUddannelses(String uddannelsessted) {
 		this.uddannelsessted = uddannelsessted;
 	}
-	public SimpleDateFormat getForventetAfsluttetDato() {
+	public LocalDate getForventetAfsluttetDato() {
 		return forventetAfsluttetDato;
 	}
-	public void setForventetAfsluttetDato(SimpleDateFormat forventetAfsluttetDato) {
+	public void setForventetAfsluttetDato(LocalDate forventetAfsluttetDato) {
 		this.forventetAfsluttetDato = forventetAfsluttetDato;
 	}
-	public SimpleDateFormat getPåbegyndtDato() {
+	public LocalDate getPåbegyndtDato() {
 		return påbegyndtDato;
 	}
-	public void setPåbegyndtDato(SimpleDateFormat påbegyndtDato) {
+	public void setPåbegyndtDato(LocalDate påbegyndtDato) {
 		this.påbegyndtDato = påbegyndtDato;
 	}
 	

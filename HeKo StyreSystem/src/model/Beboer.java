@@ -1,14 +1,15 @@
 package model;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 public class Beboer {
 private String navn;
 private String værelse;
 private Uddannelse uddannelse;
-private SimpleDateFormat indflytningsdato;
-private SimpleDateFormat lejeaftalensUdløb;
-private boolean studieaktiv;
+private LocalDate indflytningsdato;
+private LocalDate lejeaftalensUdløb;
+private String telefonnummer;
+
 /**
  * @param navn : Beboerens navn
  * @param værelse : Værelsesnummer
@@ -16,13 +17,14 @@ private boolean studieaktiv;
  * @param indflytningsdato : Dato beboeren har lejemålet fra.
  * @param lejeAftalensUdløb : datoen der kan komme til at danne grundlag for hvornår der påbegynes studiekontrol for beboeren
  */
-public Beboer(String navn, String værelse, Uddannelse uddannelse, SimpleDateFormat indflytningsdato,
-		SimpleDateFormat lejeaftalensUdløb) {
+public Beboer(String navn, String værelse, Uddannelse uddannelse, LocalDate indflytningsdato,
+		LocalDate lejeaftalensUdløb, String telefonnummer) {
 	this.navn = navn;
 	this.værelse = værelse;
 	this.uddannelse = uddannelse;
 	this.indflytningsdato = indflytningsdato;
 	this.lejeaftalensUdløb = lejeaftalensUdløb;
+	this.telefonnummer = telefonnummer;
 }
 public String getNavn() {
 	return navn;
@@ -42,23 +44,23 @@ public Uddannelse getUddannelse() {
 public void setUddannelse(Uddannelse uddannelse) {
 	this.uddannelse = uddannelse;
 }
-public SimpleDateFormat getIndflytningsdato() {
+public LocalDate getIndflytningsdato() {
 	return indflytningsdato;
 }
-public void setIndflytningsdato(SimpleDateFormat indflytningsdato) {
+public void setIndflytningsdato(LocalDate indflytningsdato) {
 	this.indflytningsdato = indflytningsdato;
 }
-public SimpleDateFormat getLejeaftalensUdløbl() {
+public LocalDate getLejeaftalensUdløbl() {
 	return lejeaftalensUdløb;
 }
-public void setLejeaftalensUdløb(SimpleDateFormat sidsteStudiekontrol) {
+public void setLejeaftalensUdløb(LocalDate sidsteStudiekontrol) {
 	this.lejeaftalensUdløb = sidsteStudiekontrol;
 }
-public boolean isStudieaktiv() {
-	return studieaktiv;
+public String getTelefonnummer() {
+	return telefonnummer;
 }
-public void setStudieaktiv(boolean studieaktiv) {
-	this.studieaktiv = studieaktiv;
+public void setTelefonnummer(String telefonnummer) {
+	this.telefonnummer = telefonnummer;
 }
 
 }
