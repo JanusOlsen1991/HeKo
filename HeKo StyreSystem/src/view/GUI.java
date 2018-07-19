@@ -2,7 +2,7 @@ package view;
 
 import java.text.SimpleDateFormat;
 
-import controller.Controller;
+import controller.ExcelConnection;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -26,7 +26,7 @@ import model.Værelsesudlejning;
 
 public class GUI {// extends Application {
 	private Scene scene;
-	Controller controller = new Controller();
+	ExcelConnection controller = new ExcelConnection();
 	GUI_PopUps popUp = new GUI_PopUps();
 
 	// Skal indeholde både modeller og Controller objekter

@@ -1,6 +1,7 @@
 package model;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 /**
  * 
  * @author Janus
@@ -9,18 +10,18 @@ import java.text.SimpleDateFormat;
 public class Deadline {
 	private String hvem;
 	private String hvad;
-	private SimpleDateFormat hvornår;
+	private LocalDate hvornår;
 	
 	/**
 	 * @param hvem : Hvem der er deadline for
 	 * @param hvad : hvad deadlinen er.
-	 * @param hvornår : Hvornår skal deadlinen klares.
+	 * @param hvornår2 : Hvornår skal deadlinen klares.
 	 */
-	public Deadline(String hvem, String hvad, SimpleDateFormat hvornår) {
+	public Deadline(String hvem, String hvad, LocalDate hvornår2) {
 		super();
 		this.hvem = hvem;
 		this.hvad = hvad;
-		this.hvornår = hvornår;
+		this.hvornår = hvornår2;
 	}
 	public String getHvem() {
 		return hvem;
@@ -34,10 +35,10 @@ public class Deadline {
 	public void setHvad(String hvad) {
 		this.hvad = hvad;
 	}
-	public SimpleDateFormat getHvornår() {
+	public LocalDate getHvornår() {
 		return hvornår;
 	}
-	public void setHvornår(SimpleDateFormat hvornår) {
+	public void setHvornår(LocalDate hvornår) {
 		this.hvornår = hvornår;
 	}
 	
