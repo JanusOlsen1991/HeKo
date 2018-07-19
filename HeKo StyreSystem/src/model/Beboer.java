@@ -9,6 +9,7 @@ private Uddannelse uddannelse;
 private LocalDate indflytningsdato;
 private LocalDate lejeaftalensUdløb;
 private String telefonnummer;
+private Enum<Studiekontrolstatus> studiekontrolstatus;
 
 /**
  * @param navn : Beboerens navn
@@ -18,13 +19,14 @@ private String telefonnummer;
  * @param lejeAftalensUdløb : datoen der kan komme til at danne grundlag for hvornår der påbegynes studiekontrol for beboeren
  */
 public Beboer(String navn, String værelse, Uddannelse uddannelse, LocalDate indflytningsdato,
-		LocalDate lejeaftalensUdløb, String telefonnummer) {
+		LocalDate lejeaftalensUdløb, String telefonnummer, Enum<Studiekontrolstatus> studiekontrolstatus) {
 	this.navn = navn;
 	this.værelse = værelse;
 	this.uddannelse = uddannelse;
 	this.indflytningsdato = indflytningsdato;
 	this.lejeaftalensUdløb = lejeaftalensUdløb;
 	this.telefonnummer = telefonnummer;
+	this.studiekontrolstatus = studiekontrolstatus;
 }
 public String getNavn() {
 	return navn;
@@ -61,6 +63,12 @@ public String getTelefonnummer() {
 }
 public void setTelefonnummer(String telefonnummer) {
 	this.telefonnummer = telefonnummer;
+}
+public Enum<Studiekontrolstatus> getStudiekontrolstatus() {
+	return studiekontrolstatus;
+}
+public void setStudiekontrolstatus(Enum<Studiekontrolstatus> studiekontrolstatus) {
+	this.studiekontrolstatus = studiekontrolstatus;
 }
 
 }

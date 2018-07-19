@@ -1,29 +1,31 @@
 package model;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.LocalDate;
+
+
+import javafx.collections.ObservableList;
 
 public class Studiekontrol {
-	private ArrayList<Beboer> beboere;
-	 private SimpleDateFormat afleveringsfrist;
-	 private SimpleDateFormat påmindelse;
+	private ObservableList<Beboer> beboere;
+	 private LocalDate afleveringsfrist;
+	 private LocalDate påmindelse;
 	
- public ArrayList getBeboere() {
+ public ObservableList<Beboer> getBeboere() {
 		return beboere;
 	}
-	public void setBeboere(ArrayList<Beboer> beboere) {
+	public void setBeboere(ObservableList<Beboer> beboere) {
 		this.beboere = beboere;
 	}
-	public SimpleDateFormat getAfleveringsfrist() {
+	public LocalDate getAfleveringsfrist() {
 		return afleveringsfrist;
 	}
-	public void setAfleveringsfrist(SimpleDateFormat afleveringsfrist) {
+	public void setAfleveringsfrist(LocalDate afleveringsfrist) {
 		this.afleveringsfrist = afleveringsfrist;
 	}
-	public SimpleDateFormat getPåmindelse() {
+	public LocalDate getPåmindelse() {
 		return påmindelse;
 	}
-	public void setPåmindelse(SimpleDateFormat påmindelse) {
+	public void setPåmindelse(LocalDate påmindelse) {
 		this.påmindelse = påmindelse;
 	}
 

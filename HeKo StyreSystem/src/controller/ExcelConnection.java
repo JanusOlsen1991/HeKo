@@ -20,6 +20,7 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.ExcelStyleDateFormatter;
@@ -34,6 +35,7 @@ import javafx.collections.ObservableList;
 import model.Beboer;
 import model.Deadline;
 import model.Studiekontrol;
+import model.Studiekontrolstatus;
 import model.Uddannelse;
 import model.Værelsesudlejning;
 
@@ -49,27 +51,202 @@ public class ExcelConnection {
 	private ObservableList<Beboer> beboere;
 	private ObservableList<Deadline> deadlines;
 	private ObservableList<Beboer> fremlejere;
-	private ObservableList<Studiekontrol> studiekontroller;
-	private ArrayList<Værelsesudlejning> værelsesudlejning;
-
+	private ArrayList<Studiekontrol> studiekontroller;// Bør ikke være der? - evt. giv beboer en variabel som tilkendegiver status?
+	private ObservableList<Værelsesudlejning> værelsesudlejning;//Evt. to obsLister? - En til udlejede og en til ikke udlejede
+	
 	Workbook wb = new XSSFWorkbook();
-
-	// Skal indeholde alle modellerne
-	public static void main(String[] args) {
-		ExcelConnection c = new ExcelConnection();
-		c.createExcelFile();
-
-	}
+	Sheet sheet;
+	Cell cell;
 
 	public ExcelConnection() {
-		// Skal ikke tage parametre, men indlæse fra Excel-fil og oprette de enkelte
-		// ObservableLists/ArrayLists.
-		// beboere = this.hentBeboere();
+		opretBeboereFraExcel(); // beboere oprettes
+		opretDeadlinesFraExcel();
+		opretFremlejerFraExcel();
+		opretStudiekontrollerFraExcel();
+		opretVærelsesudlejningFraExcel();
+	}
+private void opretStudiekontrollerFraExcel() {
+		
+		//loop der kører både beboere og fremlejer igennem
+	// tjek studiekontrolstatus
+	//Hvis studiekontrolstatus er andet end IKKEIGANG
+	//Så tilføj dem til en liste/set
+	//tredje ydre loop opretter studiekontrolobjektet der skal fyldes og lægges i 
+	//Søg listen igennem og inddel dem i studiekontroller med udgangspunkt i lejeaftalensudløb - ydre loop styrer måneden - indre loop kører listen igennem
+	//
+	//
+		
+	}
+/**
+ * Metoden henter både udlejede og ikke udlejede værelser og gemmer dem i en observableList ved navn værelsesudlejning
+ */
+	private void opretVærelsesudlejningFraExcel() {
+		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
+
+			Sheet sheet = wb.getSheet("Værelsesudlejning");
+			int startRække = sheet.getFirstRowNum() + 1;// +1 for ikk at tageoverskriften med
+
+			int slutRække = sheet.getLastRowNum();
+
+			for (int i = startRække; i < slutRække; i++) {
+				Row row = sheet.getRow(i);
+
+				int kollonnenummer = 0;
+				Cell cell;
+				cell = row.getCell(kollonnenummer);
+				LocalDate indflytningsdato = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				String værelse = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				String navn = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				LocalDate behandlingsdato = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				String behandlerinitialer = cell.getStringCellValue();
+				
+
+				Værelsesudlejning v = new Værelsesudlejning(indflytningsdato, værelse, navn, behandlingsdato, behandlerinitialer);
+				værelsesudlejning.add(v);
+
+			}
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			System.out.println("Filen kan ikke findes");
+			e.printStackTrace();
+		}		
+	}
+
+
+	/**
+	 * Metoden konverterer String til Enum
+	 * @param s String i forbindelse med studiekontrolstatus for beboer som skal konverteres til ENUM
+	 * @return Enum tilsvarende string der gemmes i Exceldokumentet
+	 */
+	private Enum<Studiekontrolstatus> konverterStringTilEnum(String s){
+		Enum<Studiekontrolstatus> status;
+		switch(s) {
+		case "Ikke i gang" :
+			status =  Studiekontrolstatus.IKKEIGANG;
+			return status;
+		case "Modtaget, ikke godkendt" :
+			status = Studiekontrolstatus.MODTAGETIKKEGODKENDT;
+			return status;
+		case "Ikke Modtaget":
+			status = Studiekontrolstatus.IKKEAFLEVERET;
+			return status;
+		case "Sendt til boligselskab":
+			status = Studiekontrolstatus.SENDTTILBOLIGSELSKAB;
+			return status;
+		default :
+			return null;
+		}
+		
+	}
+	/**
+	 * Metoden konverterer Enum til String
+	 * @param studiekontrolstatus Den Enum der skal konverteres til en string der kan gemmes i Exceldokumentet
+	 * @return String på studiekontrolstatus
+	 */
+	private String konverterEnumTilString(Studiekontrolstatus studiekontrolstatus){
+		String s;
+		switch(studiekontrolstatus) {
+		case  IKKEIGANG:
+			s = "Ikke i gang" ;
+			return s;
+		case  MODTAGETIKKEGODKENDT:
+			s = "Modtaget, ikke godkendt" ;
+			return s;
+		case IKKEAFLEVERET:
+			s = "Ikke Modtaget";
+			return s;
+		case SENDTTILBOLIGSELSKAB:
+			s = "Sendt til boligselskab";
+			return s;
+		default :
+			return null;
+		}
+		
+	}
+
+	private void opretFremlejerFraExcel() {
+		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
+
+			Sheet sheet = wb.getSheet("Fremlejer");
+			int startRække = sheet.getFirstRowNum() + 1;// +1 for ikk at tageoverskriften med
+
+			int slutRække = sheet.getLastRowNum();
+
+			for (int i = startRække; i < slutRække; i++) {
+				Row row = sheet.getRow(i);
+				// Load de forskellige ting til "beboere her"
+				int kollonnenummer = 0;
+				Cell cell;
+				cell = row.getCell(kollonnenummer);
+				String værelse = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				String navn = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				LocalDate indflytning = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				String uddannelsessted = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				String uddannelsesretning = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				LocalDate uddStart = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				LocalDate uddSlut = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				LocalDate lejeaftalensUdløb = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				String telefonnummer = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				
+				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(cell.getStringCellValue());
+				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
+				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer, studiekontrolstatus);
+				fremlejere.add(beboer);
+
+			}
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			System.out.println("Filen kan ikke findes");
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void opretDeadlinesFraExcel() {
+		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
+
+			Sheet sheet = wb.getSheet("Deadlines");
+			int startRække = sheet.getFirstRowNum() + 1;// +1 for ikk at tageoverskriften med
+
+			int slutRække = sheet.getLastRowNum();
+
+			for (int i = startRække; i < slutRække; i++) {
+				Row row = sheet.getRow(i);
+				// Load de forskellige ting til "beboere her"
+				int kollonnenummer = 0;
+				Cell cell;
+				cell = row.getCell(kollonnenummer);
+				String hvem = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				String hvad = cell.getStringCellValue();
+				cell = row.getCell(kollonnenummer++);
+				LocalDate hvornår = konverterDateTilLocalDate(cell);
+
+				Deadline deadline = new Deadline(hvem, hvad, hvornår);
+				deadlines.add(deadline);
+
+			}
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			System.out.println("Filen kan ikke findes");
+			e.printStackTrace();
+		}
 
 	}
 
 	/**
-	 * Metoden opretter fanerne og overskrifter i en excelfil. Skal anvendes hvis filen ikke kan findes.
+	 * Metoden opretter fanerne og overskrifter i en excelfil. Skal anvendes hvis
+	 * filen ikke kan findes.
 	 */
 	public void createExcelFile() {
 
@@ -156,12 +333,6 @@ public class ExcelConnection {
 		}
 	}
 
-	/**
-	 * 
-	 * @param antalKollonner
-	 *            antal kollonner i en observableList der skal fyldes
-	 * @return
-	 */
 	public ObservableList<Beboer> getBeboere() {
 
 		return beboere;
@@ -171,7 +342,7 @@ public class ExcelConnection {
 		Cell c = row.createCell(rækkeplads);
 		DataFormat format = wb.createDataFormat();
 		CellStyle datestyle = wb.createCellStyle();
-		datestyle.setDataFormat(format.getFormat("dd.MM.yyyy.hh.mm"));
+		datestyle.setDataFormat(format.getFormat("dd.MM.yyyy"));
 		c.setCellStyle(datestyle);
 		// Problemet er at der kun tilskrives dags dato
 		// Find metode til at sætte en hvilken som helst dato ind
@@ -179,7 +350,7 @@ public class ExcelConnection {
 		return c;
 	}
 
-	public void opretBeboerefraExcel() {
+	public void opretBeboereFraExcel() {
 		// WorkbookFactory oprettes ud fra den givne fil
 		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
 
@@ -211,13 +382,12 @@ public class ExcelConnection {
 				LocalDate lejeaftalensUdløb = konverterDateTilLocalDate(cell);
 				cell = row.getCell(kollonnenummer++);
 				String telefonnummer = cell.getStringCellValue();
-
-				//Dette skal rettes til
-				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart,
-						uddSlut);
-				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning,
-						lejeaftalensUdløb, telefonnummer);
-				beboere.add(beboer);
+				cell = row.getCell(kollonnenummer++);
+				
+				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(cell.getStringCellValue());
+				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
+				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer, studiekontrolstatus);
+				fremlejere.add(beboer);
 
 			}
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
@@ -243,13 +413,16 @@ public class ExcelConnection {
 		LocalDate localDate = zdt.toLocalDate();
 		return localDate;
 	}
+
 	/**
 	 * Metoden konverterer et localdate objekt til et Date() objekt.
-	 * @param dato : datoen der skal konverteres
+	 * 
+	 * @param dato
+	 *            : datoen der skal konverteres
 	 * @return Date : et DateObjekt()
 	 */
 	public Date konverterLocalDateTilDate(LocalDate dato) {
 		Date date = Date.from(dato.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	return date;
+		return date;
 	}
 }
