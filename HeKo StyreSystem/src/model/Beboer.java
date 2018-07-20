@@ -10,6 +10,8 @@ private LocalDate indflytningsdato;
 private LocalDate lejeaftalensUdløb;
 private String telefonnummer;
 private Enum<Studiekontrolstatus> studiekontrolstatus;
+private LocalDate afleveringsfrist;
+private LocalDate påmindelsesdato; //De tre nederste bør måske være i egen klasse.
 
 /**
  * @param navn : Beboerens navn
@@ -52,7 +54,7 @@ public LocalDate getIndflytningsdato() {
 public void setIndflytningsdato(LocalDate indflytningsdato) {
 	this.indflytningsdato = indflytningsdato;
 }
-public LocalDate getLejeaftalensUdløbl() {
+public LocalDate getLejeaftalensUdløb() {
 	return lejeaftalensUdløb;
 }
 public void setLejeaftalensUdløb(LocalDate sidsteStudiekontrol) {

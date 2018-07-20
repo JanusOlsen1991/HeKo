@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -62,15 +64,45 @@ public class ExcelConnection {
 		opretBeboereFraExcel(); // beboere oprettes
 		opretDeadlinesFraExcel();
 		opretFremlejerFraExcel();
-		opretStudiekontrollerFraExcel();
+		opretStudiekontrollerStart();
 		opretVærelsesudlejningFraExcel();
 	}
-private void opretStudiekontrollerFraExcel() {
+private void opretStudiekontrollerStart() {
 		
-		//loop der kører både beboere og fremlejer igennem
-	// tjek studiekontrolstatus
-	//Hvis studiekontrolstatus er andet end IKKEIGANG
-	//Så tilføj dem til en liste/set
+	//Første to loops henter alle de igangværende studiekontroller ind
+	ArrayList<Beboer> temp = new ArrayList<Beboer>();
+		for(int i = 0; i< fremlejere.size(); i++) {
+			if(fremlejere.get(i).getStudiekontrolstatus()!= Studiekontrolstatus.IKKEIGANG) {
+				temp.add(fremlejere.get(i));
+			}
+		}
+		for(int i = 0; i< beboere.size(); i++) {
+			if(fremlejere.get(i).getStudiekontrolstatus()!= Studiekontrolstatus.IKKEIGANG) {
+				temp.add(fremlejere.get(i));
+			}
+		}
+		while (temp.size()>=1) {
+			
+			for (int i = 0; i<12; i++) {
+				
+				//i holder styr på måneden
+				ObservableList<Beboer> beboereTilMåned = null;
+				int j = 0;
+				while(j< temp.size()) {
+					if(temp.get(j).getLejeaftalensUdløb().getMonthValue()==i) {
+						beboereTilMåned.add(temp.get(j));
+						temp.remove(j);
+					}
+					else
+						j++;
+				}
+				Studiekontrol studiekontrol = new Studiekontrol(beboere, null, null, 0);
+			}
+		}
+		//loop der kører både beboere og fremlejer igennem - TJEK
+	// tjek studiekontrolstatus TJEK
+	//Hvis studiekontrolstatus er andet end IKKEIGANG TJEK
+	//Så tilføj dem til en liste/set TJEK
 	//tredje ydre loop opretter studiekontrolobjektet der skal fyldes og lægges i 
 	//Søg listen igennem og inddel dem i studiekontroller med udgangspunkt i lejeaftalensudløb - ydre loop styrer måneden - indre loop kører listen igennem
 	//
@@ -136,6 +168,9 @@ private void opretStudiekontrollerFraExcel() {
 		case "Sendt til boligselskab":
 			status = Studiekontrolstatus.SENDTTILBOLIGSELSKAB;
 			return status;
+		case "Godkendt":
+			status = Studiekontrolstatus.GODKENDT;
+			return status;
 		default :
 			return null;
 		}
@@ -160,6 +195,9 @@ private void opretStudiekontrollerFraExcel() {
 			return s;
 		case SENDTTILBOLIGSELSKAB:
 			s = "Sendt til boligselskab";
+			return s;
+		case GODKENDT:
+			s = "Godkendt";
 			return s;
 		default :
 			return null;

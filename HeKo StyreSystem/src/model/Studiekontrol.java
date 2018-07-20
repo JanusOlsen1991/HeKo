@@ -9,8 +9,21 @@ public class Studiekontrol {
 	private ObservableList<Beboer> beboere;
 	 private LocalDate afleveringsfrist;
 	 private LocalDate påmindelse;
+	 private int månedsnummer;
 	
- public ObservableList<Beboer> getBeboere() {
+ /**
+	 * @param beboere
+	 * @param afleveringsfrist
+	 * @param påmindelse
+	 * @param månedsnummer
+	 */
+	public Studiekontrol(ObservableList<Beboer> beboere, LocalDate afleveringsfrist, LocalDate påmindelse, int månedsnummer) {
+		this.beboere = beboere;
+		this.afleveringsfrist = afleveringsfrist;
+		this.påmindelse = påmindelse;
+		this.månedsnummer = månedsnummer;
+	}
+public ObservableList<Beboer> getBeboere() {
 		return beboere;
 	}
 	public void setBeboere(ObservableList<Beboer> beboere) {
@@ -27,6 +40,12 @@ public class Studiekontrol {
 	}
 	public void setPåmindelse(LocalDate påmindelse) {
 		this.påmindelse = påmindelse;
+	}
+	public int getMånedsnummer() {
+		return månedsnummer;
+	}
+	public void setMånedsnummer(int månedsnummer) {
+		this.månedsnummer = månedsnummer;
 	}
 
  
