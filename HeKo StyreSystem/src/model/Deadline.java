@@ -1,6 +1,6 @@
 package model;
 
-import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
 /**
  * 
@@ -11,17 +11,16 @@ public class Deadline {
 	private String hvem;
 	private String hvad;
 	private LocalDate hvornår;
-	
 	/**
 	 * @param hvem : Hvem der er deadline for
 	 * @param hvad : hvad deadlinen er.
 	 * @param hvornår2 : Hvornår skal deadlinen klares.
 	 */
-	public Deadline(String hvem, String hvad, LocalDate hvornår2) {
+	public Deadline(String hvem, String hvad, LocalDate hvornår) {
 		super();
 		this.hvem = hvem;
 		this.hvad = hvad;
-		this.hvornår = hvornår2;
+		this.hvornår = hvornår;
 	}
 	public String getHvem() {
 		return hvem;

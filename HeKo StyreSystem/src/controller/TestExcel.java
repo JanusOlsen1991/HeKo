@@ -17,19 +17,28 @@ ExcelConnection ec = new ExcelConnection();
 Workbook wb = new XSSFWorkbook();
 Sheet sheet = wb.createSheet();
 Row row = sheet.createRow(0);
-//Date date = new Date(2000-1900, 10-1, 32);
+//Date date = new Date(2000-1900, 10-1, 31);
 //Calendar c = Calendar.getInstance();
 
 Cell cell = row.createCell(0);
-cell = ec.createExcelDateFormat(row, wb, 0, null);
+//cell = ec.createExcelDateFormat(row, wb, 0, date);
 
-if(cell.getDateCellValue() == null)
-	System.out.println("Cellen er tom");
+
+//if(cell.getDateCellValue() == null)
+//	System.out.println("Cellen er tom");
 //LocalDate ld = ec.konverterDateTilLocalDate(cell);
-//System.out.println(ld.toString());
+//System.out.println(ld.getMonth().toString());
 //
 //date = ec.konverterLocalDateTilDate(ld);
 //System.out.println(date.toString());
+
+
+//cell.setCellValue(true);
+//boolean test = cell.getBooleanCellValue();
+//if(test == true)
+//	System.out.println("Forkert");
+//else
+//	System.out.println("Passer");
 
 	}
 

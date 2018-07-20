@@ -143,6 +143,7 @@ public class GUI_PopUps {
 		udløbsmåned.getItems().addAll("Januar", "Februar", "Marts", "April", "Maj","Juni","Juli","August","September","Oktober", "November","December");
 		udløbsmåned.setPromptText("Vælg Måned");
 		
+		
 		Button påbegyndButton = new Button("Påbegynd studiekontrol");
 		påbegyndButton.setOnAction(e-> System.out.println("Jeg er ikke implementeret endnu"));
 		Button annullerButton = new Button("Annuller");

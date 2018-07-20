@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -51,9 +53,9 @@ public class ExcelConnection {
 	private ObservableList<Beboer> beboere;
 	private ObservableList<Deadline> deadlines;
 	private ObservableList<Beboer> fremlejere;
-	private ArrayList<Studiekontrol> studiekontroller;// Bør ikke være der? - evt. giv beboer en variabel som tilkendegiver status?
-	private ObservableList<Værelsesudlejning> værelsesudlejning;//Evt. to obsLister? - En til udlejede og en til ikke udlejede
-	
+	private ArrayList<Studiekontrol> studiekontroller;
+	private ObservableList<Værelsesudlejning> værelsesudlejning;
+
 	Workbook wb = new XSSFWorkbook();
 	Sheet sheet;
 	Cell cell;
@@ -62,25 +64,117 @@ public class ExcelConnection {
 		opretBeboereFraExcel(); // beboere oprettes
 		opretDeadlinesFraExcel();
 		opretFremlejerFraExcel();
-		opretStudiekontrollerFraExcel();
+		opretStudiekontrollerfraExcel();
 		opretVærelsesudlejningFraExcel();
 	}
-private void opretStudiekontrollerFraExcel() {
-		
-		//loop der kører både beboere og fremlejer igennem
-	// tjek studiekontrolstatus
-	//Hvis studiekontrolstatus er andet end IKKEIGANG
-	//Så tilføj dem til en liste/set
-	//tredje ydre loop opretter studiekontrolobjektet der skal fyldes og lægges i 
-	//Søg listen igennem og inddel dem i studiekontroller med udgangspunkt i lejeaftalensudløb - ydre loop styrer måneden - indre loop kører listen igennem
-	//
-	//
-		
+
+	private void opretStudiekontrollerfraExcel() {
+		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
+
+			Sheet sheet = wb.getSheet("Studiekontroller");
+			int startRække = sheet.getFirstRowNum() + 1;// +1 for ikk at tageoverskriften med
+
+			int slutRække = sheet.getLastRowNum();
+
+			// Opretter studiekontrolelementerne uden beboere der skal indgå
+			for (int i = startRække; i < slutRække; i++) {
+				Row row = sheet.getRow(i);
+
+				int kollonnenummer = 0;
+				Cell cell;
+				cell = row.getCell(kollonnenummer);
+				LocalDate afleveringsfrist = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				LocalDate påmindelsesdato = konverterDateTilLocalDate(cell);
+				cell = row.getCell(kollonnenummer++);
+				LocalDate begyndelsesdato = konverterDateTilLocalDate(cell);
+				int månedsnummer = (begyndelsesdato.getMonthValue() + 4) % 12; // de +4 giver den måned der påbegyndes
+																				// for.
+				cell = row.getCell(kollonnenummer++);
+				Boolean afsluttet = cell.getBooleanCellValue();
+
+				Studiekontrol studiekontrol = new Studiekontrol(null, afleveringsfrist, påmindelsesdato,
+						begyndelsesdato, månedsnummer, afsluttet);
+				studiekontroller.add(studiekontrol);
+
+			}
+			// tilføjer beboere til studiekontroller
+			for (int j = 0; j < studiekontroller.size(); j++) {
+				int måned = studiekontroller.get(j).getMånedsnummer();
+				ObservableList<Beboer> list = null;
+				
+				for (int i = 0; i < beboere.size(); i++) {
+					if (beboere.get(i).getLejeaftalensUdløb().getMonthValue() == måned) {
+						if (beboere.get(i).getStudiekontrolstatus() != Studiekontrolstatus.IKKEIGANG)
+							list.add(beboere.get(i));
+					}
+				}
+				studiekontroller.get(j).setBeboere(list);
+			}
+			//
+			//
+			//
+			//
+			//
+			// //Midlertidig arrayliste til at indeholde beboere der er med i uafsluttede
+			// studiekontroller
+			// ArrayList<Beboer> temp = new ArrayList<Beboer>();
+			// for(int i = 0; i< fremlejere.size(); i++) {
+			// if(fremlejere.get(i).getStudiekontrolstatus()!=
+			// Studiekontrolstatus.IKKEIGANG) {
+			//
+			// temp.add(fremlejere.get(i));
+			// }
+			// }
+			// for(int i = 0; i< beboere.size(); i++) {
+			// if(fremlejere.get(i).getStudiekontrolstatus()!=
+			// Studiekontrolstatus.IKKEIGANG) {
+			// //Evt. et loop her der tjekker om der allerede er nogen med det
+			// værelsesnummer i listen
+			// temp.add(fremlejere.get(i));
+			// }
+			// }
+			// //ydre loop tjekker at der er flere i listen
+			// while (temp.size()>=1) {
+			// //Holder styr på hvilken måned der testes for
+			// for (int i = 0; i<12; i++) {
+			//
+			// //i holder styr på måneden
+			// ObservableList<Beboer> beboereTilMåned = null;
+			// int j = 0;
+			// //tjekker om en given beboer har kontraktudløb til nævnte måned og tilføjer
+			// dem til en observable list
+			// while(j< temp.size()) {
+			// if(temp.get(j).getLejeaftalensUdløb().getMonthValue()==i) {
+			// beboereTilMåned.add(temp.get(j));
+			// temp.remove(j);
+			// }
+			// else
+			// j++;
+			// }
+			//
+			//
+			// if(beboereTilMåned.size() >0) {
+			// //find tilsvarende måned
+			// //setBeboere hvis det passer.
+			// }
+			// }
+			// }
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			System.out.println("Filen kan ikke findes");
+			e.printStackTrace();
+		}
+
+		// Første to loops henter alle de igangværende studiekontroller ind
+
 	}
-/**
- * Metoden henter både udlejede og ikke udlejede værelser og gemmer dem i en observableList ved navn værelsesudlejning
- */
+
+	/**
+	 * Metoden henter både udlejede og ikke udlejede værelser og gemmer dem i en
+	 * observableList ved navn værelsesudlejning
+	 */
 	private void opretVærelsesudlejningFraExcel() {
+
 		try (Workbook wb = WorkbookFactory.create(new File("IndstillingsInfo.xlsx"))) {
 
 			Sheet sheet = wb.getSheet("Værelsesudlejning");
@@ -103,31 +197,34 @@ private void opretStudiekontrollerFraExcel() {
 				LocalDate behandlingsdato = konverterDateTilLocalDate(cell);
 				cell = row.getCell(kollonnenummer++);
 				String behandlerinitialer = cell.getStringCellValue();
-				
 
-				Værelsesudlejning v = new Værelsesudlejning(indflytningsdato, værelse, navn, behandlingsdato, behandlerinitialer);
+				Værelsesudlejning v = new Værelsesudlejning(indflytningsdato, værelse, navn, behandlingsdato,
+						behandlerinitialer);
 				værelsesudlejning.add(v);
 
 			}
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
 			System.out.println("Filen kan ikke findes");
 			e.printStackTrace();
-		}		
-	}
+		}
 
+	}
 
 	/**
 	 * Metoden konverterer String til Enum
-	 * @param s String i forbindelse med studiekontrolstatus for beboer som skal konverteres til ENUM
+	 * 
+	 * @param s
+	 *            String i forbindelse med studiekontrolstatus for beboer som skal
+	 *            konverteres til ENUM
 	 * @return Enum tilsvarende string der gemmes i Exceldokumentet
 	 */
-	private Enum<Studiekontrolstatus> konverterStringTilEnum(String s){
+	private Enum<Studiekontrolstatus> konverterStringTilEnum(String s) {
 		Enum<Studiekontrolstatus> status;
-		switch(s) {
-		case "Ikke i gang" :
-			status =  Studiekontrolstatus.IKKEIGANG;
+		switch (s) {
+		case "Ikke i gang":
+			status = Studiekontrolstatus.IKKEIGANG;
 			return status;
-		case "Modtaget, ikke godkendt" :
+		case "Modtaget, ikke godkendt":
 			status = Studiekontrolstatus.MODTAGETIKKEGODKENDT;
 			return status;
 		case "Ikke Modtaget":
@@ -136,24 +233,31 @@ private void opretStudiekontrollerFraExcel() {
 		case "Sendt til boligselskab":
 			status = Studiekontrolstatus.SENDTTILBOLIGSELSKAB;
 			return status;
-		default :
+		case "Godkendt":
+			status = Studiekontrolstatus.GODKENDT;
+			return status;
+		default:
 			return null;
 		}
-		
+
 	}
+
 	/**
 	 * Metoden konverterer Enum til String
-	 * @param studiekontrolstatus Den Enum der skal konverteres til en string der kan gemmes i Exceldokumentet
+	 * 
+	 * @param studiekontrolstatus
+	 *            Den Enum der skal konverteres til en string der kan gemmes i
+	 *            Exceldokumentet
 	 * @return String på studiekontrolstatus
 	 */
-	private String konverterEnumTilString(Studiekontrolstatus studiekontrolstatus){
+	private String konverterEnumTilString(Studiekontrolstatus studiekontrolstatus) {
 		String s;
-		switch(studiekontrolstatus) {
-		case  IKKEIGANG:
-			s = "Ikke i gang" ;
+		switch (studiekontrolstatus) {
+		case IKKEIGANG:
+			s = "Ikke i gang";
 			return s;
-		case  MODTAGETIKKEGODKENDT:
-			s = "Modtaget, ikke godkendt" ;
+		case MODTAGETIKKEGODKENDT:
+			s = "Modtaget, ikke godkendt";
 			return s;
 		case IKKEAFLEVERET:
 			s = "Ikke Modtaget";
@@ -161,10 +265,13 @@ private void opretStudiekontrollerFraExcel() {
 		case SENDTTILBOLIGSELSKAB:
 			s = "Sendt til boligselskab";
 			return s;
-		default :
+		case GODKENDT:
+			s = "Godkendt";
+			return s;
+		default:
 			return null;
 		}
-		
+
 	}
 
 	private void opretFremlejerFraExcel() {
@@ -199,10 +306,11 @@ private void opretStudiekontrollerFraExcel() {
 				cell = row.getCell(kollonnenummer++);
 				String telefonnummer = cell.getStringCellValue();
 				cell = row.getCell(kollonnenummer++);
-				
+
 				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(cell.getStringCellValue());
 				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
-				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer, studiekontrolstatus);
+				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer,
+						studiekontrolstatus);
 				fremlejere.add(beboer);
 
 			}
@@ -210,7 +318,7 @@ private void opretStudiekontrollerFraExcel() {
 			System.out.println("Filen kan ikke findes");
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void opretDeadlinesFraExcel() {
@@ -383,10 +491,11 @@ private void opretStudiekontrollerFraExcel() {
 				cell = row.getCell(kollonnenummer++);
 				String telefonnummer = cell.getStringCellValue();
 				cell = row.getCell(kollonnenummer++);
-				
+
 				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(cell.getStringCellValue());
 				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
-				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer, studiekontrolstatus);
+				Beboer beboer = new Beboer(værelse, navn, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer,
+						studiekontrolstatus);
 				fremlejere.add(beboer);
 
 			}
