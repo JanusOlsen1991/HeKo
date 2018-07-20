@@ -10,8 +10,7 @@ private LocalDate indflytningsdato;
 private LocalDate lejeaftalensUdløb;
 private String telefonnummer;
 private Enum<Studiekontrolstatus> studiekontrolstatus;
-private LocalDate afleveringsfrist;
-private LocalDate påmindelsesdato; //De tre nederste bør måske være i egen klasse.
+ //De tre nederste bør måske være i egen klasse.
 
 /**
  * @param navn : Beboerens navn
