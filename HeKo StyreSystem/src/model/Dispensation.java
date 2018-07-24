@@ -1,6 +1,6 @@
 package model;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 /**
  * 
@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class Dispensation {
 private Beboer beboer;
-private SimpleDateFormat startDato;
-private SimpleDateFormat slutDato;
+private LocalDate startDato;
+private LocalDate slutDato;
 private ArrayList<Deadline> deadlines;
 /**
  * @param beboer : beboeren der får dispensation
@@ -20,7 +20,7 @@ private ArrayList<Deadline> deadlines;
  * @param slutDato : slutdato for dispensation
  * @param deadlines : eventuelle deadlines 
  */
-public Dispensation(Beboer beboer, SimpleDateFormat startDato, SimpleDateFormat slutDato,
+public Dispensation(Beboer beboer, LocalDate startDato, LocalDate slutDato,
 		ArrayList<Deadline> deadlines) {
 	this.beboer = beboer;
 	this.startDato = startDato;
@@ -33,16 +33,16 @@ public Beboer getBeboer() {
 public void setBeboer(Beboer beboer) {
 	this.beboer = beboer;
 }
-public SimpleDateFormat getStartDato() {
+public LocalDate getStartDato() {
 	return startDato;
 }
-public void setStartDato(SimpleDateFormat startDato) {
+public void setStartDato(LocalDate startDato) {
 	this.startDato = startDato;
 }
-public SimpleDateFormat getSlutDato() {
+public LocalDate getSlutDato() {
 	return slutDato;
 }
-public void setSlutDato(SimpleDateFormat slutDato) {
+public void setSlutDato(LocalDate slutDato) {
 	this.slutDato = slutDato;
 }
 public ArrayList<Deadline> getDeadlines() {

@@ -3,6 +3,11 @@ package model;
 import java.time.LocalDate;
 
 public class Værelsesudlejning {
+	private LocalDate indflytningsdato;
+	private String værelse;
+	private String navn;
+	private LocalDate behandlingsdato;
+	private String behandlerInitialer;
 	/**
 	 * @param indflytningsdato : den dato hvor en ny beboer skal overtage et værelse
 	 * @param værelse : Værelsesnummer
@@ -18,11 +23,7 @@ public class Værelsesudlejning {
 		this.behandlingsdato = behandlingsdato;
 		this.behandlerInitialer = behandlerInitialer;
 	}
-	private LocalDate indflytningsdato;
-	private String værelse;
-	private String navn;
-	private LocalDate behandlingsdato;
-	private String behandlerInitialer;
+
 	public LocalDate getindflytningsdato() {
 		return indflytningsdato;
 	}
