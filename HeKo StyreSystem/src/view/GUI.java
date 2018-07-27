@@ -77,8 +77,8 @@ public class GUI {// extends Application {
 
 		Button fjernButton = new Button("Fjern påmindelse");
 		// TESTTTTTT
-		Deadline deadline = new Deadline(null, null, null);
-		fjernButton.setOnAction(e -> popUp.afslutStudiekontrol(null, null));
+//		Deadline deadline = new Deadline(null, null, null, null, null);
+		fjernButton.setOnAction(e -> popUp.startStudiekontrol());
 
 		// Tilføjer til højre side af menuen
 		højreLayout.add(tView, 2, 3, 3, 6);
@@ -183,11 +183,11 @@ public class GUI {// extends Application {
 		TableView<Dispensation> tW = new TableView<Dispensation>();
 		TableColumn værelseColumn = new TableColumn("Værelse");
 		TableColumn navnColumn = new TableColumn("Navn");
-		TableColumn hovedMenudatoColumn = new TableColumn("hovedMenu dato");
+		TableColumn startdatoColumn = new TableColumn("Start dato");
 		TableColumn slutDatoColumn = new TableColumn("Slut dato");
 		TableColumn antalBetingelserColumn = new TableColumn("Antal betingelser");
 
-		tW.getColumns().addAll(værelseColumn, navnColumn, hovedMenudatoColumn, slutDatoColumn, antalBetingelserColumn);
+		tW.getColumns().addAll(værelseColumn, navnColumn, startdatoColumn, slutDatoColumn, antalBetingelserColumn);
 
 		Tab tab1 = new Tab("Aktive dispensationer");
 		tab1.setClosable(false);
