@@ -77,7 +77,7 @@ public class GUI {// extends Application {
 
 		Button fjernButton = new Button("Fjern påmindelse");
 		// TESTTTTTT
-		Deadline deadline = new Deadline(null, null, null, null, null);
+//		Deadline deadline = new Deadline(null, null, null, null, null);
 		fjernButton.setOnAction(e -> popUp.startStudiekontrol());
 
 		// Tilføjer til højre side af menuen

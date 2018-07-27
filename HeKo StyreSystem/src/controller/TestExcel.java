@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import model.Beboer;
 import model.Deadline;
+import model.Dispensation;
 import model.Studiekontrolstatus;
 import model.Uddannelse;
 
@@ -38,11 +41,27 @@ ec.opretBeboerIExcel(janus21);
 Uddannelse u11 = new Uddannelse("DTU", "Ingeniør", d, d);
 Beboer janus211 = new Beboer("Pis", "417", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
 ec.opretBeboerIExcel(janus211);
-for (int i = 0; i< ec.getBeboere().size(); i++) {
-	System.out.println(ec.getBeboere().get(i).getVærelse());
-	System.out.println(ec.getBeboere().get(i).getIndflytningsdato().toString());
+Deadline deadline = new Deadline("422", "Færdig med program", d, "7", ec.getDeadlines());
+ec.opretDeadlineIExcel(deadline);
+Deadline deadline1 = new Deadline("422", "Hold Kæft", d, "Indstillingen", ec.getDeadlines());
+ec.opretDeadlineIExcel(deadline1);
+Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null, ec.getDeadlines());
+ec.opretDeadlineIExcel(deadline2);
+Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null, ec.getDeadlines());
+//deadline3.setKlaret(true);
+ec.opretDeadlineIExcel(deadline3);
 
-}
+ArrayList<Deadline> dl1 = new ArrayList<Deadline>();
+dl1.addAll(ec.getDeadlines());
+Dispensation disp = new Dispensation(janus2, d, d, true, "0", dl1, ec.getDispensationer());
+ArrayList<Dispensation> l = new ArrayList<Dispensation>();
+ec.setDispensationer(l);
+ec.opretDispensationIExcel(disp);
+//for (int i = 0; i< ec.getDeadlines().size(); i++) {
+//	System.out.println(ec.getDeadlines().get(i).getHvem());
+//	System.out.println(ec.getDeadlines().get(i).getID());
+//
+//}
 
 
 

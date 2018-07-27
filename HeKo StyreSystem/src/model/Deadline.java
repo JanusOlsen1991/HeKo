@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,33 +17,30 @@ public class Deadline {
 	private String ID;// Et ID kan sammensættes ud fra værelsesnummer og beboer.getNavn
 
 	/**
+	 * VIGTIGT - HUSK AT BRUG ID PARAMETERen RIGTIGT - ELLERS VIL DER HELE TIDEN BLIVE OPRETTET EN NY DEADLINE
 	 * @param hvem
 	 *            : Hvem der er deadline for (værelse)((indstilling)
 	 * @param hvad
 	 *            : hvad deadlinen er.
-	 * @param hvornår2
+	 * @param hvornår
 	 *            : Hvornår skal deadlinen klares.
 	 * @param ID
-	 *            : Hvis ikke der findes et id sættes denne null. (Hvis id indlæses
-	 *            fra Excel skal denne ikke være null). ID sammensættes af værelsesnummer + beboernavn + plads i listen
+	 *            : Hvis ikke der findes et id sættes denne null og et ID oprettes med udgangspunkt i placering i listen. ID skal som udgangspunkt kun sættes 
 	 * @param en
-	 *            beboerliste vedhæftes så id kan oprettes ved at finde navn til det tilsvarende værelsesnummer
+	 *            beboerliste vedhæftes så id kan oprettes ved at finde navn til det
+	 *            tilsvarende værelsesnummer
 	 */
-	public Deadline(String hvem, String hvad, LocalDate hvornår, String ID, List<Beboer> list) {
+	public Deadline(String hvem, String hvad, LocalDate hvornår, String ID, List<Deadline> list) {
 
 		this.hvem = hvem;
 		this.hvad = hvad;
 		this.hvornår = hvornår;
 		klaret = false;
-		// Opretter ID ud fra værelse og navn
+		// Opretter ID ud fra placering i deadlines listen
 		if (ID == null) {
-			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i).getVærelse().equals(hvem))
-				setID(hvem + list.get(i).getNavn()); //evt. også + arrayplads
-			}
-		
-		}
-		else
+			this.setID(Integer.toString(list.size())); // skal der være +1?
+
+		} else
 			this.ID = ID;
 
 	}
@@ -83,8 +81,8 @@ public class Deadline {
 		return ID;
 	}
 
-	public void setID(String iD) {
-		ID = iD;
+	public void setID(String ID) {
+		this.ID = ID;
 	}
 
 }
