@@ -105,7 +105,7 @@ public class Dispensation {
 			for (int i = 0; i < d; i++) {
 				// Hvis der er flere deadlines tilbage (d-1 da size() vil være +1 i forhold til plads i arraylist. Dvs. i.
 				if (d-1 > i) {
-					s += deadlines.get(i).getID() + ".";
+					s += deadlines.get(i).getID() + "-";
 				}else
 					s += deadlines.get(i).getID();
 			}

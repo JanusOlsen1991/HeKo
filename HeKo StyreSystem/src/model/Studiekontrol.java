@@ -12,6 +12,7 @@ public class Studiekontrol {
 	 private LocalDate påbegyndelsesdato;
 	 private int månedsnummer;
 	 private boolean afsluttet;
+	 private String studiekontrolID;
 	
  /**
 	 * @param beboere
@@ -19,8 +20,9 @@ public class Studiekontrol {
 	 * @param påmindelse
 	 * @param månedsnummer
 	 * @param afsluttet: tilkendegiver om studiekontrollen er afsluttet
+	 * 
 	 */
-	public Studiekontrol(ArrayList<Beboer> beboere, LocalDate afleveringsfrist, LocalDate påmindelse, LocalDate påbegyndelsesdato, int månedsnummer, boolean afsluttet) {
+	public Studiekontrol(ArrayList<Beboer> beboere, LocalDate afleveringsfrist, LocalDate påmindelse, LocalDate påbegyndelsesdato, int månedsnummer, boolean afsluttet, String studiekontrolID) {
 		this.beboere = beboere;
 		this.afleveringsfrist = afleveringsfrist;
 		this.påmindelse = påmindelse;
@@ -63,6 +65,12 @@ public ArrayList<Beboer> getBeboere() {
 	}
 	public void setPåbegyndelsesdato(LocalDate påbegyndelsesdato) {
 		this.påbegyndelsesdato = påbegyndelsesdato;
+	}
+	public String getStudiekontrolID() {
+		return studiekontrolID;
+	}
+	public void setStudiekontrolID(String studiekontrolID) {
+		this.studiekontrolID = studiekontrolID;
 	}
 
  

@@ -32,6 +32,7 @@ LocalDate d = LocalDate.now();
 Uddannelse uddannelse = new Uddannelse("DTU", "Ingeniør", d, d);
 Beboer janus = new Beboer("Janus", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
 ec.opretBeboerIExcel(janus);
+ec.opretFremlejerIExcel(janus);
 Uddannelse u = new Uddannelse("DTU", "Ingeniør", d, d);
 Beboer janus2 = new Beboer("Janus Olsen", "201", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
 ec.opretBeboerIExcel(janus2);
@@ -48,21 +49,8 @@ ec.opretDeadlineIExcel(deadline1);
 Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null, ec.getDeadlines());
 ec.opretDeadlineIExcel(deadline2);
 Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null, ec.getDeadlines());
-//deadline3.setKlaret(true);
+deadline3.setKlaret(true);
 ec.opretDeadlineIExcel(deadline3);
-
-ArrayList<Deadline> dl1 = new ArrayList<Deadline>();
-dl1.addAll(ec.getDeadlines());
-Dispensation disp = new Dispensation(janus2, d, d, true, "0", dl1, ec.getDispensationer());
-ArrayList<Dispensation> l = new ArrayList<Dispensation>();
-ec.setDispensationer(l);
-ec.opretDispensationIExcel(disp);
-//for (int i = 0; i< ec.getDeadlines().size(); i++) {
-//	System.out.println(ec.getDeadlines().get(i).getHvem());
-//	System.out.println(ec.getDeadlines().get(i).getID());
-//
-//}
-
 
 
 
