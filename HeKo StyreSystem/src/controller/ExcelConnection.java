@@ -47,7 +47,6 @@ public class ExcelConnection {
 	private ArrayList<Dispensation> dispensationer = new ArrayList<Dispensation>();
 	private String filnavn = "IndstillingsInfo.xlsx";
 
-
 	public ArrayList<Dispensation> getDispensationer() {
 		return dispensationer;
 	}
@@ -128,7 +127,8 @@ public class ExcelConnection {
 
 				String værelse = row.getCell(kollonnenummer).getStringCellValue();
 
-				++kollonnenummer; //Tælles op da "navn" ikke skal hentes fra filen, men en hel beboer skal tilføres
+				++kollonnenummer; // Tælles op da "navn" ikke skal hentes fra filen, men en hel beboer skal
+									// tilføres
 				Beboer beboer = findBeboer(værelse);
 
 				Date d = row.getCell(++kollonnenummer).getDateCellValue();
@@ -140,14 +140,15 @@ public class ExcelConnection {
 				String dispID = row.getCell(++kollonnenummer).getStringCellValue();
 
 				String deadlinesID = row.getCell(++kollonnenummer).getStringCellValue();
-				
-				
+
 				boolean iGang = row.getCell(++kollonnenummer).getBooleanCellValue();
 
-				ArrayList<Deadline> dispDeadlines = findDispensationsDeadlines(deadlinesID); // Denne skal sættes i gang ved en metode til at
-																		// separere '.' og hente tilhørende deadlines
-				
-				Dispensation dispensation = new Dispensation(beboer, dispStart, dispSlut, iGang, dispID, dispDeadlines, null);
+				ArrayList<Deadline> dispDeadlines = findDispensationsDeadlines(deadlinesID); // Denne skal sættes i gang
+																								// ved en metode til at
+				// separere '.' og hente tilhørende deadlines
+
+				Dispensation dispensation = new Dispensation(beboer, dispStart, dispSlut, iGang, dispID, dispDeadlines,
+						null);
 				dispensationer.add(dispensation);
 
 			}
@@ -161,32 +162,40 @@ public class ExcelConnection {
 		}
 
 	}
-/**
- * Metoden skal anvendes til at finde deadlines der hører til en bestemt Dispensation.
- * @param deadlinesID : String der inderholder samtlige id'er på deadlines tilhørende dispensationen separeret med et '-'
- * @return ArrayList der indeholder deadlines
- */
+
+	/**
+	 * Metoden skal anvendes til at finde deadlines der hører til en bestemt
+	 * Dispensation.
+	 * 
+	 * @param deadlinesID
+	 *            : String der inderholder samtlige id'er på deadlines tilhørende
+	 *            dispensationen separeret med et '-'
+	 * @return ArrayList der indeholder deadlines
+	 */
 	private ArrayList<Deadline> findDispensationsDeadlines(String deadlinesID) {
 		ArrayList<Deadline> list = new ArrayList<Deadline>();
 
 		String[] temp = deadlinesID.split("-");
 
-		for(int i = 0; i< temp.length; i++) {
+		for (int i = 0; i < temp.length; i++) {
 			String s = temp[i];
-			
-			for(int j = 0; j<deadlines.size(); j++) {
-				if(s.equals(deadlines.get(j).getID())) {
+
+			for (int j = 0; j < deadlines.size(); j++) {
+				if (s.equals(deadlines.get(j).getID())) {
 					list.add(deadlines.get(j));
 				}
 			}
 		}
 		return list;
 	}
-/**
- * Anvendes til at finde en bestemt beboer i beboerarrayet
- * @param værelsesNummer : værelsesnummeret på den beboer der skal findes
- * @return
- */
+
+	/**
+	 * Anvendes til at finde en bestemt beboer i beboerarrayet
+	 * 
+	 * @param værelsesNummer
+	 *            : værelsesnummeret på den beboer der skal findes
+	 * @return
+	 */
 	public Beboer findBeboer(String værelsesNummer) {
 		for (int i = 0; i < beboere.size(); i++) {
 			if (beboere.get(i).getVærelse().equals(værelsesNummer)) {
@@ -224,7 +233,7 @@ public class ExcelConnection {
 				int månedsnummer = (begyndelsesdato.getMonthValue() + 4) % 12; // de +4 giver den måned der påbegyndes
 																				// for.
 				Boolean afsluttet = row.getCell(++kollonnenummer).getBooleanCellValue();
-				
+
 				String studiekontrolID = row.getCell(++kollonnenummer).getStringCellValue();
 
 				Studiekontrol studiekontrol = new Studiekontrol(null, afleveringsfrist, påmindelsesdato,
@@ -728,7 +737,6 @@ public class ExcelConnection {
 		row5.createCell(++start).setCellValue("afsluttet?");
 		row5.createCell(++start).setCellValue("studiekontrol ID");
 
-
 		start = 0;
 
 		// Overskrifter til værelsesudlejning
@@ -813,10 +821,7 @@ public class ExcelConnection {
 
 				Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(2).setCellValue(d1);
-				// Date d1 =
-				// konverterLocalDateTilDate(beboer.getIndflytningsdato());//HERRRRRRRRRRRR
-				// createExcelDateFormat(workbook, 0, slutRække+1, 2,
-				// beboer.getIndflytningsdato());
+
 
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(3)
 						.setCellValue(beboer.getUddannelse().getUddannelsessted());
@@ -851,6 +856,75 @@ public class ExcelConnection {
 		}
 
 	}
+
+	public void opretVærelsesudlejning(Værelsesudlejning værelsesudlejning) {
+		try {
+			FileInputStream fis = new FileInputStream(filnavn);
+			Workbook workbook = WorkbookFactory.create(fis);
+			int startRække = 1;
+			int slutRække = workbook.getSheetAt(5).getLastRowNum();
+			boolean værelsesudlejningFindes = false;
+
+			// Loop gennem excel dokumentet og find rækkepladsen
+			for (int i = startRække; i <= slutRække; i++) {
+				String sVærelse = workbook.getSheetAt(5).getRow(i).getCell(1).getStringCellValue(); // Hvilken celle?
+				String sNavn = workbook.getSheetAt(5).getRow(i).getCell(2).getStringCellValue(); // Hvilken celle?
+
+				// Hvis det passer, så skriv til værelsesnummeret
+				if (sVærelse.equals(værelsesudlejning.getVærelse())) {
+					if(sNavn == null){
+						int celleNr = 0;
+
+						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getindflytningsdato());
+						workbook.getSheetAt(5).getRow(i).getCell(celleNr).setCellValue(d1);
+
+						++celleNr; //Går hen over værelsesnummeret
+
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr)
+								.setCellValue(værelsesudlejning.getNavn());
+
+						Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(d2);
+
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(værelsesudlejning.getBehandlerInitialer());
+
+						værelsesudlejningFindes = true;
+
+					}
+				}
+			}
+			if (værelsesudlejningFindes == false) {
+				workbook.getSheetAt(5).createRow(slutRække + 1);
+				int celleNr = 0;
+
+				Date d1 = konverterLocalDateTilDate(værelsesudlejning.getindflytningsdato());
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(celleNr).setCellValue(d1);
+
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(værelsesudlejning.getVærelse());
+
+				workbook.getSheetAt(5).getRow(slutRække + 1).getCell(++celleNr).setCellValue("");//Navn er null hvis værelset ikke skal udlejes
+
+				Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
+						.setCellValue(d2);
+
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
+						.setCellValue(""); //Behandler initialer er = "" hvis ikke det er blevet udlejet endnu
+
+			}
+
+			// you have to close the input stream FIRST before writing to the same file.
+			fis.close();
+
+			// save your changes to the same file.
+			workbook.write(new FileOutputStream(filnavn));
+			workbook.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void opretStudiekontrollerIExcel(Studiekontrol studiekontrol) {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -862,11 +936,11 @@ public class ExcelConnection {
 			// Loop gennem excel dokumentet og find rækkepladsen
 			for (int i = startRække; i <= slutRække; i++) {
 				String s = workbook.getSheetAt(4).getRow(i).getCell(5).getStringCellValue();
-				
+
 				// Hvis det passer, så skriv til værelsesnummeret
 				if (s.equals(studiekontrol.getStudiekontrolID())) {
 					int celleNr = 0;
-					
+
 					Date d1 = konverterLocalDateTilDate(studiekontrol.getAfleveringsfrist());
 					workbook.getSheetAt(4).getRow(i).getCell(celleNr).setCellValue(d1);
 
@@ -880,45 +954,34 @@ public class ExcelConnection {
 
 					workbook.getSheetAt(4).getRow(i).getCell(++celleNr).setCellValue(studiekontrol.isAfsluttet());
 
-//					workbook.getSheetAt(4).getRow(i).getCell(++celleNr).setCellValue(); - Behøver ikke overskrive ID'et
+					// workbook.getSheetAt(4).getRow(i).getCell(++celleNr).setCellValue(); - Behøver
+					// ikke overskrive ID'et
 
 					studiekontrolFindes = true;
 
 				}
 			}
-			if (studiekontrolFindes == false) {				
+			if (studiekontrolFindes == false) {
 				workbook.getSheetAt(4).createRow(slutRække + 1);
 				int celleNr = 0;
-				
+
 				Date d1 = konverterLocalDateTilDate(studiekontrol.getAfleveringsfrist());
 				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(celleNr).setCellValue(d1);
-				
+
 				Date d2 = konverterLocalDateTilDate(studiekontrol.getPåmindelse());
 				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d2);
-				
-				
 
-				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d1);
+				Date d3 = konverterLocalDateTilDate(studiekontrol.getPåbegyndelsesdato());
+				workbook.getSheetAt(4).getRow(slutRække + 1).getCell(++celleNr).setCellValue(d3);
 
 				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr)
-						.setCellValue(beboer.getUddannelse().getUddannelsessted());
+						.setCellValue(studiekontrol.getMånedsnummer());
 
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(++celleNr)
-						.setCellValue();
+				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr)
+						.setCellValue(studiekontrol.isAfsluttet());
 
-				Date d2 = konverterLocalDateTilDate(beboer.getUddannelse().getPåbegyndtDato());
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(5).setCellValue(d2);
-
-				Date d3 = konverterLocalDateTilDate(beboer.getUddannelse().getForventetAfsluttetDato());
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(6).setCellValue(d3);
-
-				Date d4 = konverterLocalDateTilDate(beboer.getLejeaftalensUdløb());
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(7).setCellValue(d4);
-
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(8).setCellValue(beboer.getTelefonnummer());
-
-				String s1 = konverterEnumTilString((Studiekontrolstatus) beboer.getStudiekontrolstatus());
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(9).setCellValue(s1);
+				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr)
+						.setCellValue(studiekontrol.getStudiekontrolID());
 			}
 
 			// you have to close the input stream FIRST before writing to the same file.
@@ -933,7 +996,7 @@ public class ExcelConnection {
 		}
 
 	}
-	
+
 	public void opretFremlejerIExcel(Beboer beboer) { //
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -1025,29 +1088,6 @@ public class ExcelConnection {
 	public ArrayList<Beboer> getBeboere() {
 
 		return beboere;
-	}
-
-	/**
-	 * Metoden kan anvendes hvis man vil skrive datoen "pænere" til excel. til date,
-	 * samt indsætter dette i cellen.
-	 * 
-	 * @param row
-	 * @param wb
-	 * @param rækkeplads
-	 * @param date
-	 * @return
-	 */
-	public Cell createExcelDateFormat(Workbook workbook, int sheetnummer, int rækkeplads, int celleplads,
-			LocalDate date) {// Test om den sætter det
-		// ind i rette kolllonne
-		Cell c = workbook.getSheetAt(sheetnummer).getRow(rækkeplads).createCell(celleplads);
-		DataFormat format = workbook.createDataFormat();
-		CellStyle datestyle = workbook.createCellStyle();
-		datestyle.setDataFormat(format.getFormat("dd.MM.yyyy"));
-		c.setCellStyle(datestyle);
-		Date d = konverterLocalDateTilDate(date);
-		c.setCellValue(d); // new Date()
-		return c;
 	}
 
 	public void hentBeboereFraExcel() {

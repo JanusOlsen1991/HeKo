@@ -27,31 +27,31 @@ import model.Uddannelse;
 public class TestExcel {
 //This works i principle!
 	public static void main(String[] args) throws InvalidFormatException, EncryptedDocumentException, IOException {
-ExcelConnection ec = new ExcelConnection();
-LocalDate d = LocalDate.now();
-Uddannelse uddannelse = new Uddannelse("DTU", "Ingeniør", d, d);
-Beboer janus = new Beboer("Janus", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
-ec.opretBeboerIExcel(janus);
-ec.opretFremlejerIExcel(janus);
-Uddannelse u = new Uddannelse("DTU", "Ingeniør", d, d);
-Beboer janus2 = new Beboer("Janus Olsen", "201", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
-ec.opretBeboerIExcel(janus2);
-Uddannelse u1 = new Uddannelse("DTU", "Ingeniør", d, d);
-Beboer janus21 = new Beboer("Lort lugter", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
-ec.opretBeboerIExcel(janus21);
-Uddannelse u11 = new Uddannelse("DTU", "Ingeniør", d, d);
-Beboer janus211 = new Beboer("Pis", "417", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
-ec.opretBeboerIExcel(janus211);
-Deadline deadline = new Deadline("422", "Færdig med program", d, "7", ec.getDeadlines());
-ec.opretDeadlineIExcel(deadline);
-Deadline deadline1 = new Deadline("422", "Hold Kæft", d, "Indstillingen", ec.getDeadlines());
-ec.opretDeadlineIExcel(deadline1);
-Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null, ec.getDeadlines());
-ec.opretDeadlineIExcel(deadline2);
-Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null, ec.getDeadlines());
-deadline3.setKlaret(true);
-ec.opretDeadlineIExcel(deadline3);
-
+//ExcelConnection ec = new ExcelConnection();
+//LocalDate d = LocalDate.now();
+//Uddannelse uddannelse = new Uddannelse("DTU", "Ingeniør", d, d);
+//Beboer janus = new Beboer("Janus", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
+//ec.opretBeboerIExcel(janus);
+//ec.opretFremlejerIExcel(janus);
+//Uddannelse u = new Uddannelse("DTU", "Ingeniør", d, d);
+//Beboer janus2 = new Beboer("Janus Olsen", "201", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
+//ec.opretBeboerIExcel(janus2);
+//Uddannelse u1 = new Uddannelse("DTU", "Ingeniør", d, d);
+//Beboer janus21 = new Beboer("Lort lugter", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
+//ec.opretBeboerIExcel(janus21);
+//Uddannelse u11 = new Uddannelse("DTU", "Ingeniør", d, d);
+//Beboer janus211 = new Beboer("Pis", "417", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
+//ec.opretBeboerIExcel(janus211);
+//Deadline deadline = new Deadline("422", "Færdig med program", d, "7", ec.getDeadlines());
+//ec.opretDeadlineIExcel(deadline);
+//Deadline deadline1 = new Deadline("422", "Hold Kæft", d, "Indstillingen", ec.getDeadlines());
+//ec.opretDeadlineIExcel(deadline1);
+//Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null, ec.getDeadlines());
+//ec.opretDeadlineIExcel(deadline2);
+//Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null, ec.getDeadlines());
+//deadline3.setKlaret(true);
+//ec.opretDeadlineIExcel(deadline3);
+System.out.println(13%12);
 
 
 ////		//Metode herunder skal anvendes til at opdatere og skrive til excel
