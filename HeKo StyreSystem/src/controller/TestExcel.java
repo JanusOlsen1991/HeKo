@@ -27,7 +27,7 @@ import model.Uddannelse;
 public class TestExcel {
 //This works i principle!
 	public static void main(String[] args) throws InvalidFormatException, EncryptedDocumentException, IOException {
-//ExcelConnection ec = new ExcelConnection();
+ExcelConnection ec = new ExcelConnection();
 //LocalDate d = LocalDate.now();
 //Uddannelse uddannelse = new Uddannelse("DTU", "Ingeniør", d, d);
 //Beboer janus = new Beboer("Janus", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
@@ -42,16 +42,21 @@ public class TestExcel {
 //Uddannelse u11 = new Uddannelse("DTU", "Ingeniør", d, d);
 //Beboer janus211 = new Beboer("Pis", "417", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
 //ec.opretBeboerIExcel(janus211);
-//Deadline deadline = new Deadline("422", "Færdig med program", d, "7", ec.getDeadlines());
+//Deadline deadline = new Deadline("422", "Færdig med program", d, "7");
 //ec.opretDeadlineIExcel(deadline);
-//Deadline deadline1 = new Deadline("422", "Hold Kæft", d, "Indstillingen", ec.getDeadlines());
+//Deadline deadline1 = new Deadline("422", "Hold Kæft", d, "Indstillingen");
 //ec.opretDeadlineIExcel(deadline1);
-//Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null, ec.getDeadlines());
+//Deadline deadline2 = new Deadline("Indstillingen", "Bold I morgen", d , null);
 //ec.opretDeadlineIExcel(deadline2);
-//Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null, ec.getDeadlines());
+//Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null);
 //deadline3.setKlaret(true);
 //ec.opretDeadlineIExcel(deadline3);
-System.out.println(13%12);
+char c = '1';
+char c2 = '5';
+if(c == c2)
+	System.out.println("match");
+else
+	System.out.println("no match");
 
 
 ////		//Metode herunder skal anvendes til at opdatere og skrive til excel

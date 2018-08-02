@@ -18,6 +18,8 @@ public class Uddannelse {
 	 * 
 	 * @param uddannelsessted : en der udbyder uddannelsesretningen
 	 * @param uddannelsesretning : Den bestemte uddannelsesretning den studerende følger.
+	 * @param påbegyndtDato : påbegyndelsesdatoen
+	 * @param forventetAfsluttetDato : datoen for forventet afslutning af uddannelse
 	 */
 	public Uddannelse(String uddannelsessted, String uddannelsesretning, LocalDate påbegyndtDato, LocalDate forventetAfsluttetDato) {
 		this.uddannelsessted = uddannelsessted;
@@ -35,7 +37,7 @@ public class Uddannelse {
 	public String getUddannelsessted() {
 		return uddannelsessted;
 	}
-	public void setUddannelses(String uddannelsessted) {
+	public void setUddannelsessted(String uddannelsessted) {
 		this.uddannelsessted = uddannelsessted;
 	}
 	public LocalDate getForventetAfsluttetDato() {

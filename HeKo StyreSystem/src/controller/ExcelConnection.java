@@ -46,6 +46,7 @@ public class ExcelConnection {
 	private ArrayList<Værelsesudlejning> værelsesudlejning;
 	private ArrayList<Dispensation> dispensationer = new ArrayList<Dispensation>();
 	private String filnavn = "IndstillingsInfo.xlsx";
+//	private String filnavn = "C:/Users/Janus/Dropbox/Indstillingen/Beboerliste/IndstillingsInfo.xlsx"; - Denne virker til DropBox Fra min PC
 
 	public ArrayList<Dispensation> getDispensationer() {
 		return dispensationer;
@@ -319,7 +320,7 @@ public class ExcelConnection {
 	 *            konverteres til ENUM
 	 * @return Enum tilsvarende string der gemmes i Exceldokumentet
 	 */
-	private Enum<Studiekontrolstatus> konverterStringTilEnum(String s) {
+	public Enum<Studiekontrolstatus> konverterStringTilEnum(String s) {
 		Enum<Studiekontrolstatus> status;
 		switch (s) {
 		case "Ikke i gang":
@@ -351,7 +352,7 @@ public class ExcelConnection {
 	 *            Exceldokumentet
 	 * @return String på studiekontrolstatus
 	 */
-	private String konverterEnumTilString(Studiekontrolstatus studiekontrolstatus) {
+	public String konverterEnumTilString(Studiekontrolstatus studiekontrolstatus) {
 		String s;
 		switch (studiekontrolstatus) {
 		case IKKEIGANG:
@@ -417,10 +418,9 @@ public class ExcelConnection {
 
 				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(
 						row.getCell(++kollonnenummer).getStringCellValue());
-				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
 
-				Beboer beboer = new Beboer(værelse, navn, uddannelse, fremlejeStartdato, fremlejeSlutdato,
-						telefonnummer, studiekontrolstatus);
+				Beboer beboer = new Beboer(værelse, navn, fremlejeStartdato, fremlejeSlutdato,
+						telefonnummer, studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
 				fremlejere.add(beboer);
 
 			}
@@ -436,7 +436,7 @@ public class ExcelConnection {
 	/**
 	 * Henter deadlines fra Excel
 	 */
-	private void hentDeadlinesFraExcel() {
+	public void hentDeadlinesFraExcel() {
 
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -464,7 +464,7 @@ public class ExcelConnection {
 
 				// Sidste del i deadline er null, da der altid vil være et ID på når der loades
 				// fra excel
-				Deadline deadline = new Deadline(hvem, hvad, hvornår, ID, null);
+				Deadline deadline = new Deadline(hvem, hvad, hvornår, ID, this);
 				deadline.setKlaret(klaret);
 				deadlines.add(deadline);
 
@@ -486,8 +486,9 @@ public class ExcelConnection {
 			int startRække = 1;
 			int slutRække = workbook.getSheetAt(3).getLastRowNum();
 			boolean deadlineFindes = false;
-
+			System.out.println(slutRække);
 			// Loop gennem excel dokumentet og find rækkepladsen
+//			if(slutRække)
 			for (int i = startRække; i <= slutRække; i++) {
 				String s = workbook.getSheetAt(3).getRow(i).getCell(4).getStringCellValue();
 				// Hvis det passer, så skriv til værelsesnummeret
@@ -539,46 +540,7 @@ public class ExcelConnection {
 
 	}
 
-	// public void redigerDeadlineIExcel(Deadline deadline) { // SKAL FIKSES
-	// try (Workbook wb = WorkbookFactory.create(new File(filnavn))) {
-	//
-	// Sheet sheet = wb.getSheet("Deadlines");
-	// int startRække = sheet.getFirstRowNum() + 1;
-	// int slutRække = sheet.getLastRowNum();
-	//
-	// for (int i = startRække; i < slutRække; i++) {
-	//
-	// Row row = sheet.getRow(i);
-	// int idKollonne = 3; // (3 = ID-kollonnen)
-	// Cell cell;
-	// if (row.getCell(idKollonne).getStringCellValue().equals(deadline.getID())) {
-	// int start = 0;
-	// cell = row.getCell(start);
-	// cell.setCellValue(deadlines.get(i).getHvem());// Hvem
-	// cell = row.getCell(++start);
-	// cell.setCellValue(deadlines.get(i).getHvad());// Hvad
-	// cell = row.getCell(++start);
-	// Date hvornår = konverterLocalDateTilDate(deadlines.get(i).getHvornår());//
-	// Hvornår
-	// cell.setCellValue(hvornår);
-	// cell = row.getCell(++start);
-	// cell.setCellValue(deadlines.get(i).getID());// ID
-	// cell = row.getCell(++start);
-	// cell.setCellValue(deadlines.get(i).isKlaret());// Boolean klaret
-	//
-	// }
-	//
-	// }
-	// FileOutputStream stream = new FileOutputStream(filnavn);
-	// wb.write(stream);
-	// wb.close();
-	//
-	// } catch (EncryptedDocumentException | InvalidFormatException | IOException e)
-	// {
-	// System.out.println("Filen kan ikke findes");
-	// e.printStackTrace();
-	// }
-	// }
+	
 	public void opretDispensationIExcel(Dispensation dispensation) {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -790,15 +752,15 @@ public class ExcelConnection {
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(d1);
 
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelse().getUddannelsessted());
+							.setCellValue(beboer.getUddannelsessted());
 
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelse().getUddannelsesretning());
+							.setCellValue(beboer.getUddannelsesretning());
 
-					Date d2 = konverterLocalDateTilDate(beboer.getUddannelse().getPåbegyndtDato());
+					Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(d2);
 
-					Date d3 = konverterLocalDateTilDate(beboer.getUddannelse().getForventetAfsluttetDato());
+					Date d3 = konverterLocalDateTilDate(beboer.getForventetAfsluttetDato());
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(d3);
 
 					Date d4 = konverterLocalDateTilDate(beboer.getLejeaftalensUdløb());
@@ -824,15 +786,15 @@ public class ExcelConnection {
 
 
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(3)
-						.setCellValue(beboer.getUddannelse().getUddannelsessted());
+						.setCellValue(beboer.getUddannelsessted());
 
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(4)
-						.setCellValue(beboer.getUddannelse().getUddannelsesretning());
+						.setCellValue(beboer.getUddannelsesretning());
 
-				Date d2 = konverterLocalDateTilDate(beboer.getUddannelse().getPåbegyndtDato());
+				Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(5).setCellValue(d2);
 
-				Date d3 = konverterLocalDateTilDate(beboer.getUddannelse().getForventetAfsluttetDato());
+				Date d3 = konverterLocalDateTilDate(beboer.getForventetAfsluttetDato());
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(6).setCellValue(d3);
 
 				Date d4 = konverterLocalDateTilDate(beboer.getLejeaftalensUdløb());
@@ -996,6 +958,9 @@ public class ExcelConnection {
 		}
 
 	}
+	public void afslutFremleje() {
+		
+	}
 
 	public void opretFremlejerIExcel(Beboer beboer) { //
 		try {
@@ -1045,7 +1010,10 @@ public class ExcelConnection {
 			if (beboerFindes == false) {
 
 				workbook.getSheetAt(2).createRow(slutRække + 1);
+				
+				
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(0).setCellValue(beboer.getVærelse());
+				
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(1).setCellValue(beboer.getNavn());
 
 				Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
@@ -1130,9 +1098,8 @@ public class ExcelConnection {
 				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(
 						row.getCell(++kollonnenummer).getStringCellValue());
 
-				Uddannelse uddannelse = new Uddannelse(uddannelsessted, uddannelsesretning, uddStart, uddSlut);
-				Beboer beboer = new Beboer(navn, værelse, uddannelse, indflytning, lejeaftalensUdløb, telefonnummer,
-						studiekontrolstatus);
+				Beboer beboer = new Beboer(navn, værelse, indflytning, lejeaftalensUdløb, telefonnummer,
+						studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
 				beboere.add(beboer);
 
 			}

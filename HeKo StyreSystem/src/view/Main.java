@@ -1,5 +1,6 @@
 package view;
 
+import controller.ExcelConnection;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,7 +13,8 @@ import javafx.stage.Stage;
 import model.Deadline;
 
 public class Main extends Application {
-	GUI g = new GUI();
+	ExcelConnection ec = new ExcelConnection();
+	GUI g = new GUI(ec);
 
 	public static void main(String[] args) {
 
