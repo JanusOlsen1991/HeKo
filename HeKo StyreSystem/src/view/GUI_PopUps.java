@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import model.Beboer;
 import model.Deadline;
+import model.Dispensation;
 import model.Studiekontrolstatus;
 import model.Værelsesudlejning;
 
@@ -220,6 +221,91 @@ public class GUI_PopUps {
 		stage.setScene(scene);
 		stage.showAndWait();
 	}
+	
+	public void opretDispensation(ExcelConnection ec, TableView<Dispensation> tView) {
+		stage.setTitle("Rediger beboeroplysninger");
+		// stage.initModality(Modality.APPLICATION_MODAL);
+
+		GridPane layout = new GridPane();
+
+		Label l1 = new Label("Værelse:");
+		Label l2 = new Label("Navn:");
+		Label l3 = new Label("Begrundelse for dispensation:");
+		Label l4 = new Label("Start dato:");
+		Label l5 = new Label("Slut dato");
+		Label l6 = new Label("Betingelser");
+		Label l7 = new Label("Indstillingsformandens navn");
+//		Label l8 = new Label("Forventet uddannelsesafslutning");
+//		Label l9 = new Label("Lejeaftalens udløb:");
+//		Label l10 = new Label("Studiekontrol status:");
+
+		TextField værelse = new TextField();
+		TextField navn = new TextField();
+		TextArea begrundelse = new TextArea();
+		DatePicker startDato = new DatePicker();
+		DatePicker slutDato = new DatePicker();
+		TextField formandsNavn = new TextField();
+		ComboBox<String> studiekontrolStatus = new ComboBox<String>();
+		studiekontrolStatus.getItems().addAll("Ikke i gang", "Modtaget, ikke godkendt", "Ikke Modtaget",
+				"Sendt til boligselskab", "Godkendt");
+
+		Button gemButton = new Button("Opret beboer");
+		gemButton.setOnAction(e -> {
+			Studiekontrolstatus status = (Studiekontrolstatus) ec
+					.konverterStringTilEnum(studiekontrolStatus.getValue());
+			
+			Beboer b = new Beboer(navn.getText(), værelse.getText(), indflytningsdato.getValue(),
+					lejeaftalensUdløb.getValue(), telefonnummer.getText(), status, uddannelsessted.getText(),
+					uddannelsesretning.getText(), uddStart.getValue(), uddSlut.getValue());
+			Dispensation d = new Dispensation(b, null, null, false, null, null, null);
+			
+			ec.opretBeboerIExcel(b);
+			ec.getBeboere().clear();
+			ec.hentBeboereFraExcel();
+			
+			tView.getItems().add(d);
+			tView.refresh();
+			
+			stage.close();
+		});
+		Button annullerButton = new Button("Annuller");
+		annullerButton.setOnAction(e -> {
+			stage.close();
+		});
+
+		layout.add(l1, 3, 3);
+		layout.add(l2, 3, 6);
+		layout.add(l3, 3, 9);
+		layout.add(l4, 3, 12);
+		layout.add(l5, 3, 15);
+		layout.add(l6, 3, 18);
+		layout.add(l7, 3, 21);
+		layout.add(l8, 3, 24);
+		layout.add(l9, 3, 27);
+		layout.add(l10, 3, 30);
+
+		// Sætter tekstfelter og datepicker på layout
+		layout.add(værelse, 5, 3);
+		layout.add(navn, 5, 6);
+		layout.add(indflytningsdato, 5, 9);
+		layout.add(telefonnummer, 5, 12);
+		layout.add(uddannelsessted, 5, 15);
+		layout.add(uddannelsesretning, 5, 18);
+		layout.add(uddStart, 5, 21);
+		layout.add(uddSlut, 5, 24);
+		layout.add(lejeaftalensUdløb, 5, 27);
+		layout.add(studiekontrolStatus, 5, 30);
+
+		// Sætter buttons på layout
+		layout.add(gemButton, 3, 33);
+		layout.add(annullerButton, 5, 33);
+		layout.setPrefSize(500, 700);
+
+		Scene scene = new Scene(layout);
+		stage.setScene(scene);
+		stage.showAndWait();
+	}
+	
 
 	public void redigerBeboeroplysninger(Beboer beboer, ExcelConnection ec, TableView<Beboer> tView) {
 		stage.setTitle("Rediger beboeroplysninger");
@@ -442,9 +528,9 @@ public class GUI_PopUps {
 
 	}
 
-	// stage.setTitle("Påbegynd studiekontrol");
-	// GridPane layout = new GridPane();
-	// Scene scene = new Scene(layout);
-	// stage.setScene(scene);
-	// stage.show();
+	public void redigerDispensation(Dispensation clickedRow, ExcelConnection ec, TableView<Dispensation> tView) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
