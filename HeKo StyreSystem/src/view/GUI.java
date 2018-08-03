@@ -33,6 +33,7 @@ public class GUI {
 	private Scene scene;
 	ExcelConnection ec = new ExcelConnection();
 	GUI_PopUps popUp = new GUI_PopUps();
+	GUI_PopUps_Deadlines popUpDead = new GUI_PopUps_Deadlines();
 
 	public GUI(ExcelConnection ec) {
 		// this.ec = ec;
@@ -54,13 +55,15 @@ public class GUI {
 		borderP.setLeft(venstreLayout);
 		borderP.setCenter(højreLayout);
 
+		
+		TableView<Deadline> tView = new TableView<Deadline>();
 		// Buttons til venstre side af menuen
 		Button beboerlisteButton = new Button("Beboerliste");
 		beboerlisteButton.setOnAction(e -> beboerlisteMenu(primaryStage));
 		Button studieKontrolButton = new Button("Studiekontrol");
 		studieKontrolButton.setOnAction(e -> studieKontrolMenu(primaryStage));
 		Button dispensationsButton = new Button("Dispensation");
-		dispensationsButton.setOnAction(e -> dispensationsMenu(primaryStage));
+		dispensationsButton.setOnAction(e -> dispensationsMenu(primaryStage, tView));
 		Button fremlejeButton = new Button("Fremleje");
 		fremlejeButton.setOnAction(e -> fremlejeMenu(primaryStage));
 		Button værelsesudlejningsButton = new Button("Værelsesudlejning");
@@ -81,7 +84,7 @@ public class GUI {
 		TableColumn<Deadline, String> hvemColumn = new TableColumn("Hvem:");
 		hvemColumn.setCellValueFactory(new PropertyValueFactory<>("hvem"));
 
-		TableView<Deadline> tView = new TableView<Deadline>();
+
 		tView.setItems(getDeadlines());
 
 		tView.getColumns().addAll(hvornårColumn, hvadColumn, hvemColumn);
@@ -94,7 +97,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Deadline clickedRow = row.getItem();
-					popUp.changeDeadline(clickedRow, ec, tView);
+					popUpDead.changeDeadline(clickedRow, ec, tView);
 					tView.refresh();
 				}
 			});
@@ -102,7 +105,7 @@ public class GUI {
 		});
 
 		Button tilføjButton = new Button("Tilføj påmindelse");
-		tilføjButton.setOnAction(event -> popUp.createDeadline(ec, tView));
+		tilføjButton.setOnAction(event -> popUpDead.createDeadline(ec, tView));
 
 		Button fjernButton = new Button("Fjern påmindelse");
 		fjernButton.setOnAction(event -> {
@@ -224,7 +227,7 @@ public class GUI {
 		return null;
 	}
 
-	private void dispensationsMenu(Stage primaryStage) {
+	private void dispensationsMenu(Stage primaryStage, TableView<Deadline> tViewHMenu) {
 
 		BorderPane borderP = new BorderPane();
 
@@ -265,7 +268,7 @@ public class GUI {
 				if (! row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					
 					Dispensation clickedRow = row.getItem();
-					popUp.redigerDispensation(clickedRow, ec, tView);
+					popUp.redigerDispensation(clickedRow, ec, tView, tViewHMenu);
 				}
 			});
 			return row;
@@ -275,7 +278,7 @@ public class GUI {
 			row.setOnMouseClicked(event -> {
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					
-					popUp.opretDispensation(ec, tView);
+					popUp.opretDispensation(ec, tView, tViewHMenu);//, tView
 				}
 			});
 			return row;
@@ -284,7 +287,7 @@ public class GUI {
 		// Start knappen
 		Button startDispButton = new Button("Kom i gang");
 		startDispButton.setOnAction(e -> {
-			popUp.opretDispensation(ec, tView);
+			popUp.opretDispensation(ec, tView, tViewHMenu);//, tView
 		});
 
 		tView.setPlaceholder(startDispButton);

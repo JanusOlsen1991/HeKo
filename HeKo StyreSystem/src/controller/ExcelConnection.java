@@ -112,7 +112,7 @@ public class ExcelConnection {
 
 	}
 
-	private void hentDispensationerFraExcel() {
+	public void hentDispensationerFraExcel() {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
 			Workbook workbook = WorkbookFactory.create(fis);
