@@ -40,10 +40,10 @@ public class GUI_PopUps_Deadlines {
 		opretButton.setOnAction(e -> {
 			Deadline d = new Deadline(hvem.getText(), hvad.getText(), hvornår.getValue(), null, ec);
 			ec.opretDeadlineIExcel(d);
-			ec.getDeadlines().clear();
-			ec.hentDeadlinesFraExcel();
+//			ec.getDeadlines().clear();
+//			ec.hentDeadlinesFraExcel();
 			tView.getItems().add(d);
-			this.list.add(d);
+//			this.list.add(d);
 			stage.close();
 		});
 		Button annullerButton = new Button("Annuller");

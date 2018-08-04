@@ -143,6 +143,81 @@ public class GUI_PopUps {
 		stage.showAndWait();
 	}
 
+	public void opretNyFremlejer(ExcelConnection ec, TableView<Beboer> tView) {
+		stage.setTitle("Opret Fremlejer");
+		// stage.initModality(Modality.APPLICATION_MODAL);
+
+		GridPane layout = new GridPane();
+
+		Label l1 = new Label("Værelse:");
+		Label l2 = new Label("Navn:");
+		Label l3 = new Label("Indflytningsdato:");
+		Label l4 = new Label("Telefonnummer:");
+		Label l5 = new Label("Uddannelsessted");
+		Label l6 = new Label("Uddannelsesretning");
+		Label l7 = new Label("Uddannelse påbegyndt");
+		Label l8 = new Label("Forventet uddannelsesafslutning");
+		Label l9 = new Label("Lejeaftalens udløb:");
+
+		TextField værelse = new TextField();
+		TextField navn = new TextField();
+		DatePicker indflytningsdato = new DatePicker();
+		TextField telefonnummer = new TextField();
+		TextField uddannelsessted = new TextField();
+		TextField uddannelsesretning = new TextField();
+		DatePicker uddStart = new DatePicker();
+		DatePicker uddSlut = new DatePicker();
+		DatePicker lejeaftalensUdløb = new DatePicker();
+
+		Button gemButton = new Button("Opret beboer");
+		gemButton.setOnAction(e -> {
+			Beboer b = new Beboer(navn.getText(), værelse.getText(), indflytningsdato.getValue(),
+					lejeaftalensUdløb.getValue(), telefonnummer.getText(), Studiekontrolstatus.IKKEIGANG,
+					uddannelsessted.getText(), uddannelsesretning.getText(), uddStart.getValue(), uddSlut.getValue());
+
+			ec.opretFremlejerIExcel(b);
+			ec.getFremlejere().clear();
+			ec.hentFremlejerFraExcel();
+			tView.getItems().add(b);
+			tView.refresh();
+			stage.close();
+		});
+		Button annullerButton = new Button("Annuller");
+		annullerButton.setOnAction(e -> {
+			stage.close();
+		});
+
+		layout.add(l1, 3, 3);
+		layout.add(l2, 3, 6);
+		layout.add(l3, 3, 9);
+		layout.add(l4, 3, 12);
+		layout.add(l5, 3, 15);
+		layout.add(l6, 3, 18);
+		layout.add(l7, 3, 21);
+		layout.add(l8, 3, 24);
+		layout.add(l9, 3, 27);
+
+		// Sætter tekstfelter og datepicker på layout
+		layout.add(værelse, 5, 3);
+		layout.add(navn, 5, 6);
+		layout.add(indflytningsdato, 5, 9);
+		layout.add(telefonnummer, 5, 12);
+		layout.add(uddannelsessted, 5, 15);
+		layout.add(uddannelsesretning, 5, 18);
+		layout.add(uddStart, 5, 21);
+		layout.add(uddSlut, 5, 24);
+		layout.add(lejeaftalensUdløb, 5, 27);
+
+		// Sætter buttons på layout
+		layout.add(gemButton, 3, 33);
+		layout.add(annullerButton, 5, 33);
+		layout.setPrefSize(500, 700);
+
+		Scene scene = new Scene(layout);
+		stage.setScene(scene);
+		stage.showAndWait();
+	}
+
 	@SuppressWarnings("unchecked")
 	public void opretDispensation(ExcelConnection ec, TableView<Dispensation> tableView,
 			TableView<Deadline> tViewHMenu) {// TableView<Dispensation> tView -> anavendes evt. hvis hovedmenu deadlines
@@ -236,39 +311,42 @@ public class GUI_PopUps {
 		// Bunden af menuen
 		Button gemButton = new Button("Opret Dispensation");
 		gemButton.setOnAction(e -> {
+			ObservableList<Deadline> list = tView.getItems();
+			ArrayList<Deadline> listDeads = new ArrayList<Deadline>();
+			// Deadlines
+			for (Deadline d : list) { // Virker
+				Deadline deadline = new Deadline(d.getHvem(), d.getHvad(), d.getHvornår(), null, ec);
+				ec.opretDeadlineIExcel(deadline);
+				ec.getDeadlines().clear();
+				ec.hentDeadlinesFraExcel();
+				listDeads.add(ec.getDeadlines().get(ec.getDeadlines().size() - 1));
+			}
 
-			// Dispensation d = new Dispensation(b, null, null, false, null, null, null);
-			// ArrayList<Deadline> list = popUpDead.getList();
-			// for(int i = 0; i<list.size(); i++) {
-			// Deadline d = list.get(i);
-			// System.out.println(d.getHvad());
-			// ec.opretDeadlineIExcel(d);
-			//
-			// }
-			// ec.getDeadlines().clear();
-			// ec.hentDeadlinesFraExcel();
-			// ec.opretDispensationIExcel(d);
+			// Tjekker om dispensationen er i gang - Bør måske være igangværende og kommende
+			// dispensationer?
+			boolean iGang = false;
+			if (startDato.getValue().isBefore(LocalDate.now()) || startDato.getValue().equals(LocalDate.now())) {
+
+				if (slutDato.getValue().isAfter(LocalDate.now()) || slutDato.getValue().equals(LocalDate.now())) {
+					iGang = true;
+				}
+			}
+
+			Beboer b = ec.findBeboer(værelse.getText());
+			Dispensation disp = new Dispensation(b, startDato.getValue(), slutDato.getValue(), iGang, null, listDeads,
+					ec);
+
+			ec.opretDispensationIExcel(disp);
 			ec.getDispensationer().clear();
 			ec.hentDispensationerFraExcel();
-
-			// tView.getItems().add(d);
-			tView.refresh();
+			tableView.getItems().add(disp);
+			tableView.refresh();
 
 			stage.close();
 		});
-		Button annullerButton = new Button("Annuller");//HER
+		Button annullerButton = new Button("Annuller");
 		annullerButton.setOnAction(e -> {
-			ObservableList<Deadline> deadlineValgt, alleDeadlines;
-			alleDeadlines = tViewHMenu.getItems();
-			deadlineValgt = FXCollections.observableArrayList(popUpDead.getList());
-			for (int i = 0; i < deadlineValgt.size(); i++) {
-				Deadline d = deadlineValgt.get(i);
-				d.setKlaret(true);
-				ec.opretDeadlineIExcel(d);
-				deadlineValgt.forEach(alleDeadlines::remove);
 
-			}
-			tViewHMenu.refresh();
 			stage.close();
 		});
 

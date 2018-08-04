@@ -3,6 +3,8 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import controller.ExcelConnection;
+
 /**
  * 
  * @author Janus 
@@ -37,14 +39,14 @@ public class Dispensation {
 	 *            Denne parameter gives hvis ikke der gives et ID.
 	 */
 	public Dispensation(Beboer beboer, LocalDate startDato, LocalDate slutDato, boolean iGang, String ID,
-			ArrayList<Deadline> deadlines, ArrayList<Dispensation> dispensationer) {
+			ArrayList<Deadline> deadlines, ExcelConnection ec) {
 		this.beboer = beboer;
 		this.startDato = startDato;
 		this.slutDato = slutDato;
 		this.iGang = iGang;
 		this.deadlines = deadlines;
 		if (ID == null) {
-			ID = "disp" + dispensationer.size();
+			ID = "disp" + ec.getDispensationer().size();
 			//Bør have reference til Deadlines
 
 		} else {

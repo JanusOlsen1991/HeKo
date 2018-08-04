@@ -1,6 +1,6 @@
 package controller;
 
-import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,24 +10,18 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import model.Beboer;
 import model.Deadline;
 import model.Dispensation;
 import model.Studiekontrol;
 import model.Studiekontrolstatus;
-import model.Uddannelse;
 import model.Værelsesudlejning;
 
 /**
@@ -41,9 +35,9 @@ public class ExcelConnection {
 	// Controller oprettes selv som et objekt i viewet
 	private ArrayList<Beboer> beboere = new ArrayList<Beboer>();
 	private ArrayList<Deadline> deadlines = new ArrayList<Deadline>();
-	private ArrayList<Beboer> fremlejere;
+	private ArrayList<Beboer> fremlejere = new ArrayList<Beboer>();
 	private ArrayList<Studiekontrol> studiekontroller = new ArrayList<Studiekontrol>();
-	private ArrayList<Værelsesudlejning> værelsesudlejning;
+	private ArrayList<Værelsesudlejning> værelsesudlejning = new ArrayList<Værelsesudlejning>();
 	private ArrayList<Dispensation> dispensationer = new ArrayList<Dispensation>();
 	private String filnavn = "IndstillingsInfo.xlsx";
 //	private String filnavn = "C:/Users/Janus/Dropbox/Indstillingen/Beboerliste/IndstillingsInfo.xlsx"; - Denne virker til DropBox Fra min PC
@@ -272,7 +266,7 @@ public class ExcelConnection {
 	 * Metoden henter både udlejede og ikke udlejede værelser og gemmer dem i en
 	 * ArrayList ved navn værelsesudlejning
 	 */
-	private void hentVærelsesudlejningFraExcel() {
+	public void hentVærelsesudlejningFraExcel() {
 
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -379,7 +373,7 @@ public class ExcelConnection {
 	/**
 	 * Henter fremelejer fra excel dokument
 	 */
-	private void hentFremlejerFraExcel() {
+	public void hentFremlejerFraExcel() {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
 			Workbook workbook = WorkbookFactory.create(fis);
@@ -389,7 +383,7 @@ public class ExcelConnection {
 
 			int slutRække = workbook.getSheetAt(2).getLastRowNum();
 
-			for (int i = startRække; i < slutRække; i++) {
+			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(2).getRow(i);
 				// Load de forskellige ting til "beboere her"
 				int kollonnenummer = 0;
@@ -421,7 +415,8 @@ public class ExcelConnection {
 
 				Beboer beboer = new Beboer(værelse, navn, fremlejeStartdato, fremlejeSlutdato,
 						telefonnummer, studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
-				fremlejere.add(beboer);
+				this.fremlejere.add(beboer);
+				System.out.println(beboer.getNavn());
 
 			}
 			fis.close();
@@ -834,7 +829,7 @@ public class ExcelConnection {
 
 				// Hvis det passer, så skriv til værelsesnummeret
 				if (sVærelse.equals(værelsesudlejning.getVærelse())) {
-					if(sNavn == null){
+					if(sNavn == null ||sNavn.equals("")){ // Her bør der måsjke være ==.equals("");
 						int celleNr = 0;
 
 						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getindflytningsdato());
@@ -1020,15 +1015,15 @@ public class ExcelConnection {
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(2).setCellValue(d1);
 
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(3)
-						.setCellValue(beboer.getUddannelse().getUddannelsessted());
+						.setCellValue(beboer.getUddannelsessted());
 
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(4)
-						.setCellValue(beboer.getUddannelse().getUddannelsesretning());
+						.setCellValue(beboer.getUddannelsesretning());
 
-				Date d2 = konverterLocalDateTilDate(beboer.getUddannelse().getPåbegyndtDato());
+				Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(5).setCellValue(d2);
 
-				Date d3 = konverterLocalDateTilDate(beboer.getUddannelse().getForventetAfsluttetDato());
+				Date d3 = konverterLocalDateTilDate(beboer.getForventetAfsluttetDato());
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(6).setCellValue(d3);
 
 				Date d4 = konverterLocalDateTilDate(beboer.getLejeaftalensUdløb());
