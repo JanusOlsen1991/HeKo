@@ -24,10 +24,10 @@ public class Værelsesudlejning {
 		this.behandlerInitialer = behandlerInitialer;
 	}
 
-	public LocalDate getindflytningsdato() {
+	public LocalDate getIndflytningsdato() {
 		return indflytningsdato;
 	}
-	public void setindflytningsdato(LocalDate indflytningsdato) {
+	public void setIndflytningsdato(LocalDate indflytningsdato) {
 		this.indflytningsdato = indflytningsdato;
 	}
 	public String getVærelse() {

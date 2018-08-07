@@ -12,11 +12,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+//import javafx.scene.control.Cell;
 import model.Beboer;
 import model.Deadline;
 import model.Dispensation;
@@ -276,7 +279,7 @@ public class ExcelConnection {
 
 			int slutRække = workbook.getSheetAt(5).getLastRowNum();
 
-			for (int i = startRække; i < slutRække; i++) {
+			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(5).getRow(i);
 
 				int kollonnenummer = 0;
@@ -288,8 +291,15 @@ public class ExcelConnection {
 
 				String navn = row.getCell(++kollonnenummer).getStringCellValue();
 
-				Date d2 = row.getCell(++kollonnenummer).getDateCellValue();
-				LocalDate behandlingsdato = konverterDateTilLocalDate(d2);
+				//kan ikke hente "tomme" date celler, så det tjekkes der for
+				LocalDate behandlingsdato;
+				Cell c = row.getCell(++kollonnenummer);
+				if(c != null) {
+				Date d2 = row.getCell(kollonnenummer).getDateCellValue();
+				behandlingsdato = konverterDateTilLocalDate(d2);
+				}else
+					behandlingsdato = null;
+				
 
 				String behandlerinitialer = row.getCell(++kollonnenummer).getStringCellValue();
 
@@ -365,7 +375,7 @@ public class ExcelConnection {
 			s = "Godkendt";
 			return s;
 		default:
-			return null;
+			return "";
 		}
 
 	}
@@ -814,7 +824,7 @@ public class ExcelConnection {
 
 	}
 
-	public void opretVærelsesudlejning(Værelsesudlejning værelsesudlejning) {
+	public void opretVærelsesudlejningIExcel(Værelsesudlejning værelsesudlejning) {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
 			Workbook workbook = WorkbookFactory.create(fis);
@@ -832,7 +842,7 @@ public class ExcelConnection {
 					if(sNavn == null ||sNavn.equals("")){ // Her bør der måsjke være ==.equals("");
 						int celleNr = 0;
 
-						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getindflytningsdato());
+						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
 						workbook.getSheetAt(5).getRow(i).getCell(celleNr).setCellValue(d1);
 
 						++celleNr; //Går hen over værelsesnummeret
@@ -841,7 +851,7 @@ public class ExcelConnection {
 								.setCellValue(værelsesudlejning.getNavn());
 
 						Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
-						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(d2);
+						workbook.getSheetAt(5).getRow(i).createCell(++celleNr).setCellValue(d2); //TODO
 
 						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(værelsesudlejning.getBehandlerInitialer());
 
@@ -854,16 +864,19 @@ public class ExcelConnection {
 				workbook.getSheetAt(5).createRow(slutRække + 1);
 				int celleNr = 0;
 
-				Date d1 = konverterLocalDateTilDate(værelsesudlejning.getindflytningsdato());
+				Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(celleNr).setCellValue(d1);
 
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(værelsesudlejning.getVærelse());
 
-				workbook.getSheetAt(5).getRow(slutRække + 1).getCell(++celleNr).setCellValue("");//Navn er null hvis værelset ikke skal udlejes
-
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue("");//Navn er null hvis værelset ikke skal udlejes
+				
+				if(værelsesudlejning.getBehandlingsdato() != null) {
 				Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
 						.setCellValue(d2);
+				}else
+					++celleNr;
 
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
 						.setCellValue(""); //Behandler initialer er = "" hvis ikke det er blevet udlejet endnu

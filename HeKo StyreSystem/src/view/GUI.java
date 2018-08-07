@@ -66,7 +66,7 @@ public class GUI {
 		Button fremlejeButton = new Button("Fremleje");
 		fremlejeButton.setOnAction(e -> fremlejeMenu(primaryStage));
 		Button værelsesudlejningsButton = new Button("Værelsesudlejning");
-		værelsesudlejningsButton.setOnAction(e -> værelsesUdlejning(primaryStage));
+		værelsesudlejningsButton.setOnAction(e -> værelsesUdlejningMenu(primaryStage));
 
 		// Tilføjer buttons til venstre side.
 		venstreLayout.getChildren().addAll(beboerlisteButton, studieKontrolButton, dispensationsButton, fremlejeButton,
@@ -148,7 +148,7 @@ public class GUI {
 	 *            : main stage
 	 */
 	@SuppressWarnings("unchecked")
-	private void værelsesUdlejning(Stage primaryStage) {
+	private void værelsesUdlejningMenu(Stage primaryStage) {
 		BorderPane borderP = new BorderPane();
 		// venstre side
 		Button tilbageButton = new Button("Tilbage");
@@ -156,7 +156,6 @@ public class GUI {
 			try {
 				hovedMenu(primaryStage);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -177,17 +176,33 @@ public class GUI {
 
 		
 		TableView<Værelsesudlejning> tView1 = new TableView<Værelsesudlejning>();
-		tView1.setPlaceholder(""); //TODO Knap der skal lave noget...
+		Button buttonStart = new Button("Kom i gang");
+		buttonStart.setOnAction(event-> {
+			popUp.opretLedigtVærelse(ec, tView1);
+		});
+		
+		tView1.setPlaceholder(buttonStart);
 		TableView<Værelsesudlejning> tView2 = new TableView<Værelsesudlejning>();
 
 		// Herunder oprettes en metode til at håndtere dobbeltklik
 		tView1.setRowFactory(tv -> {
 			TableRow<Værelsesudlejning> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
+				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+
+					popUp.opretLedigtVærelse(ec, tView1);
+					tView1.refresh();
+				}
+			});
+			return row;
+		});
+		tView1.setRowFactory(tv -> {
+			TableRow<Værelsesudlejning> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Værelsesudlejning clickedRow = row.getItem();
-					popUp.værelsesUdlejning(clickedRow, ec, tView1);
+					popUp.udfyldLedigtVærelse(ec, tView1, tView2, clickedRow);
 					tView1.refresh();
 				}
 			});
@@ -197,23 +212,34 @@ public class GUI {
 		TableColumn<Værelsesudlejning, String> værelseColumn = new TableColumn<Værelsesudlejning, String>("Værelse");
 		værelseColumn.setCellValueFactory(new PropertyValueFactory<>("værelse"));
 
-		TableColumn<Værelsesudlejning, String> navnColumn = new TableColumn<Værelsesudlejning, String>("Navn");
-		navnColumn.setCellValueFactory(new PropertyValueFactory<>("navn"));
-
 		TableColumn<Værelsesudlejning, LocalDate> indflytningColumn = new TableColumn<Værelsesudlejning, LocalDate>(
 				"Overtagelsesdato");
 		indflytningColumn.setCellValueFactory(new PropertyValueFactory<>("indflytningsdato"));
-		TableColumn<Værelsesudlejning, String> behandletDatoColumn = new TableColumn<Værelsesudlejning, String>(
-				"Behandlingsdato");
-		behandletDatoColumn.setCellValueFactory(new PropertyValueFactory<>("behandlingsdato"));
-		TableColumn<Værelsesudlejning, String> behandlerInitialerColumn = new TableColumn<Værelsesudlejning, String>(
-				"Behandler Initialer");
-		behandlerInitialerColumn.setCellValueFactory(new PropertyValueFactory<>("behandlerInitialer"));
+		
+
 		tView1.setItems(getVærelsesUdlejning(true));
+
+		
+		
+		
+		TableColumn<Værelsesudlejning, String> værelseColumn2 = new TableColumn<Værelsesudlejning, String>("Værelse");
+		værelseColumn2.setCellValueFactory(new PropertyValueFactory<>("værelse"));
+
+		TableColumn<Værelsesudlejning, String> navnColumn2 = new TableColumn<Værelsesudlejning, String>("Navn");
+		navnColumn2.setCellValueFactory(new PropertyValueFactory<>("navn"));
+
+		TableColumn<Værelsesudlejning, LocalDate> indflytningColumn2 = new TableColumn<Værelsesudlejning, LocalDate>(
+				"Overtagelsesdato");
+		indflytningColumn2.setCellValueFactory(new PropertyValueFactory<>("indflytningsdato"));
+		TableColumn<Værelsesudlejning, String> behandletDatoColumn2 = new TableColumn<Værelsesudlejning, String>(
+				"Behandlingsdato");
+		behandletDatoColumn2.setCellValueFactory(new PropertyValueFactory<>("behandlingsdato"));
+		TableColumn<Værelsesudlejning, String> behandlerInitialerColumn2 = new TableColumn<Værelsesudlejning, String>(
+				"Behandler Initialer");
+		behandlerInitialerColumn2.setCellValueFactory(new PropertyValueFactory<>("behandlerInitialer"));
 		tView2.setItems(getVærelsesUdlejning(false));
 
-		tView1.getColumns().addAll(indflytningColumn, værelseColumn, navnColumn, behandletDatoColumn,
-				behandlerInitialerColumn);
+		tView1.getColumns().addAll(indflytningColumn, værelseColumn);
 		tView2.getColumns().addAll(indflytningColumn2, værelseColumn2, navnColumn2, behandletDatoColumn2,
 				behandlerInitialerColumn2);
 
@@ -235,14 +261,15 @@ public class GUI {
 		ArrayList<Værelsesudlejning> temp = new ArrayList<Værelsesudlejning>();
 		if (ledigeVærelser == true) {
 			for (Værelsesudlejning v : alleVærelser) {
-				if(v.getNavn()==null || v.getNavn().equals("")) {
+				if(v.getNavn().length() == 0) {
 				temp.add(v);
 				}
 			}
 		} else {
 			for (Værelsesudlejning v : alleVærelser) {
-				if(v.getNavn()!=null || !(v.getNavn().equals(""))) {
+				if(v.getNavn().length()>0) {
 					temp.add(v);
+
 				}
 			}
 
@@ -252,9 +279,6 @@ public class GUI {
 	}
 
 	
-
-	
-
 	private void dispensationsMenu(Stage primaryStage, TableView<Deadline> tViewHMenu) {
 
 		BorderPane borderP = new BorderPane();
@@ -475,8 +499,9 @@ public class GUI {
 		tView1.setRowFactory(tv -> {
 			TableRow<Beboer> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
+				System.out.println("Her");
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-
+					System.out.println("Jeg komemr her");
 					Beboer clickedRow = row.getItem();
 					popUp.redigerBeboeroplysninger(clickedRow, ec, tView1);
 
@@ -489,7 +514,7 @@ public class GUI {
 			row.setOnMouseClicked(event -> {
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					// dobbeltklik på tom række virker ikke?
-					Beboer clickedRow = row.getItem();
+//					Beboer clickedRow = row.getItem();
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
 				}
 			});
@@ -519,8 +544,6 @@ public class GUI {
 			TableRow<Beboer> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-					// dobbeltklik på tom række virker ikke?
-					Beboer clickedRow = row.getItem();
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
 				}
 			});
@@ -875,13 +898,10 @@ public class GUI {
 		// Der skal lægges ind og testes for 'isKlaret'
 		ArrayList<Beboer> alleFremlejere = ec.getFremlejere();
 		ArrayList<Beboer> temp = new ArrayList<Beboer>();
-		System.out.println("her kommer jeg");
-		System.out.println(ec.getFremlejere().get(0).getNavn());
+
 		for (Beboer b : alleFremlejere) {
-			System.out.println("Her burde jeg komme");
 			if (b.getLejeaftalensUdløb().isAfter(LocalDate.now())) {
 				temp.add(b);
-				System.out.println("Jeg er her");
 			}
 		}
 

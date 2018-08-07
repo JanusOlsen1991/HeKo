@@ -45,7 +45,7 @@ public class Beboer {
 		this.lejeaftalensUdløb = lejeaftalensUdløb;
 		this.telefonnummer = telefonnummer;
 		if (studiekontrolstatus == null) {
-			// this.studiekontrolstatus = Studiek
+			this.studiekontrolstatus = Studiekontrolstatus.IKKEIGANG;
 		}
 		this.studiekontrolstatus = studiekontrolstatus;
 		this.setUddannelsessted(uddannelsessted);
