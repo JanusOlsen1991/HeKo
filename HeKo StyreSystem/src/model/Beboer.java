@@ -2,10 +2,11 @@ package model;
 
 import java.time.LocalDate;
 
+import controller.ExcelConnection;
+
 public class Beboer {
 	private String navn;
 	private String værelse;
-	private Uddannelse uddannelse;
 	private LocalDate indflytningsdato;
 	private LocalDate lejeaftalensUdløb;
 	private String telefonnummer;
@@ -14,6 +15,7 @@ public class Beboer {
 	private String uddannelsessted;
 	private LocalDate påbegyndtDato;
 	private LocalDate forventetAfsluttetDato;
+	private String statusPåStudiekontrol;
 
 	/**
 	 * @param navn
@@ -46,8 +48,11 @@ public class Beboer {
 		this.telefonnummer = telefonnummer;
 		if (studiekontrolstatus == null) {
 			this.studiekontrolstatus = Studiekontrolstatus.IKKEIGANG;
-		}
+			statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
+		} else {
 		this.studiekontrolstatus = studiekontrolstatus;
+		statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
+		}
 		this.setUddannelsessted(uddannelsessted);
 		this.setUddannelsesretning(uddannelsesretning);
 		this.setForventetAfsluttetDato(forventetAfsluttetDato);
@@ -70,13 +75,6 @@ public class Beboer {
 		this.værelse = værelse;
 	}
 
-	public Uddannelse getUddannelse() {
-		return uddannelse;
-	}
-
-	public void setUddannelse(Uddannelse uddannelse) {
-		this.uddannelse = uddannelse;
-	}
 
 	public LocalDate getIndflytningsdato() {
 		return indflytningsdato;
@@ -108,6 +106,7 @@ public class Beboer {
 
 	public void setStudiekontrolstatus(Enum<Studiekontrolstatus> studiekontrolstatus) {
 		this.studiekontrolstatus = studiekontrolstatus;
+		statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
 	}
 
 	public String getUddannelsesretning() {
@@ -141,5 +140,13 @@ public class Beboer {
 	public void setForventetAfsluttetDato(LocalDate forventetAfsluttetDato) {
 		this.forventetAfsluttetDato = forventetAfsluttetDato;
 	}
+
+	public String getStatusPåStudiekontrol() {
+		return statusPåStudiekontrol;
+	}
+
+//	public void setStatusPåStudiekontrol(String statusPåStudiekontrol) {
+//		this.statusPåStudiekontrol = statusPåStudiekontrol; //TODO Tror ikke den skal bruges men ellers skal enum på status også ændres
+//	}
 
 }

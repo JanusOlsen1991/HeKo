@@ -379,6 +379,29 @@ public class ExcelConnection {
 		}
 
 	}
+	public static String konverterEnumTilStringHelp(Studiekontrolstatus studiekontrolstatus) {
+		String s;
+		switch (studiekontrolstatus) {
+		case IKKEIGANG:
+			s = "Ikke i gang";
+			return s;
+		case MODTAGETIKKEGODKENDT:
+			s = "Modtaget, ikke godkendt";
+			return s;
+		case IKKEAFLEVERET:
+			s = "Ikke Modtaget";
+			return s;
+		case SENDTTILBOLIGSELSKAB:
+			s = "Sendt til boligselskab";
+			return s;
+		case GODKENDT:
+			s = "Godkendt";
+			return s;
+		default:
+			return "";
+		}
+
+	}
 
 	/**
 	 * Henter fremelejer fra excel dokument
@@ -992,15 +1015,15 @@ public class ExcelConnection {
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(d1);
 
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelse().getUddannelsessted());
+							.setCellValue(beboer.getUddannelsessted());
 
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelse().getUddannelsesretning());
+							.setCellValue(beboer.getUddannelsesretning());
 
-					Date d2 = konverterLocalDateTilDate(beboer.getUddannelse().getPåbegyndtDato());
+					Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(d2);
 
-					Date d3 = konverterLocalDateTilDate(beboer.getUddannelse().getForventetAfsluttetDato());
+					Date d3 = konverterLocalDateTilDate(beboer.getForventetAfsluttetDato());
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(d3);
 
 					Date d4 = konverterLocalDateTilDate(beboer.getLejeaftalensUdløb());

@@ -573,24 +573,33 @@ public class GUI_PopUps {
 		stage.show();
 	}
 
-	public void afslutStudiekontrol(String måned, ArrayList arrayList) {
+	public void afslutStudiekontrol(String måned, ArrayList<Beboer> arrayList, ExcelConnection ec, TableView<Beboer> tView) {
 		stage.setTitle("Afslut studiekontrol for " + måned);
 		GridPane layout = new GridPane();
 
 		Label l1 = new Label("Er du sikker på du vil afslutte studiekontrollen for " + måned
 				+ "\nog sende de herunder listede beboeres oplysninger videre til boligselskabet?");
 		Button jaButton = new Button("Ja");
+		jaButton.setOnAction(event -> {
+			//TODO skriv navnene til fil så de kan sendes til KAB - ÆNDR alle deres STUDIEKONTROLSTATUS til SENDTTILKAB
+			//TODO REDIGER studiekontrolsobjektet til afsluttet i excel
+		});
 		Button nejButton = new Button("Nej");
+		nejButton.setOnAction(event -> stage.close());
 
-		TableColumn værelse = new TableColumn();
-		TableColumn navn = new TableColumn();
+		TableColumn<Beboer, String> værelse = new TableColumn<Beboer, String>();
+		værelse.setCellValueFactory(new PropertyValueFactory<>("værelse"));
+		TableColumn<Beboer, String> navn = new TableColumn<Beboer, String>();
+		navn.setCellValueFactory(new PropertyValueFactory<>("navn"));
+		TableColumn<Beboer, String> studiekontrolStatus = new TableColumn<Beboer, String>();
+		studiekontrolStatus.setCellValueFactory(new PropertyValueFactory<>("statusPåStudiekontrol"));
 
-		TableView<Beboer> tView = new TableView();
-		tView.getColumns().addAll(værelse, navn);
+		TableView<Beboer> tView2 = new TableView();
+		tView2.getColumns().addAll(værelse, navn);
 
 		layout.add(l1, 3, 3, 5, 1);
 
-		layout.add(tView, 3, 4, 3, 1);
+		layout.add(tView2, 3, 4, 3, 1);
 		layout.add(jaButton, 4, 6);
 		layout.add(nejButton, 6, 6);
 
