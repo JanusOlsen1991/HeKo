@@ -15,7 +15,7 @@ public class Studiekontrol {
 	private String studiekontrolID;
 
 	/**
-	 * @param beboere
+	 * @param beboere skal
 	 * @param afleveringsfrist
 	 * @param påmindelse
 	 * @param månedsnummer
@@ -40,39 +40,54 @@ public class Studiekontrol {
 
 	private String opretStudiekontrolID() {
 		String s;
-		int måned = getMånedsnummer() + 4;
+		int måned = (getMånedsnummer() + 4)%12;
 		int år;
 
-		if (måned % 12 > 0)
+		if (måned < getMånedsnummer())
 			år = påbegyndelsesdato.getYear();
 		else
 			år = påbegyndelsesdato.getYear() + 1;
 
 		switch (månedsnummer) {
+		case 0:
+			s = "December";
+			break;
 		case 1:
 			s = "Januar";
+			break;
 		case 2:
 			s = "Februar";
+			break;
 		case 3:
 			s = "Marts";
+			break;
 		case 4:
 			s = "April";
+			break;
 		case 5:
 			s = "Maj";
+			break;
 		case 6:
 			s = "Juni";
+			break;
 		case 7:
 			s = "Juli";
+			break;
 		case 8:
 			s = "August";
+			break;
 		case 9:
 			s = "September";
+			break;
 		case 10:
 			s = "Oktober";
+			break;
 		case 11:
 			s = "November";
+			break;
 		case 12:
 			s = "December";
+			break;
 		default:
 			s = "Ukendt måned";
 

@@ -16,7 +16,7 @@ public class Beboer {
 	private LocalDate påbegyndtDato;
 	private LocalDate forventetAfsluttetDato;
 	private String statusPåStudiekontrol;
-
+	
 	/**
 	 * @param navn
 	 *            : Beboerens navn
@@ -44,7 +44,7 @@ public class Beboer {
 		this.navn = navn;
 		this.værelse = værelse;
 		this.indflytningsdato = indflytningsdato;
-		this.lejeaftalensUdløb = lejeaftalensUdløb;
+		this.setLejeaftalensUdløb(lejeaftalensUdløb);
 		this.telefonnummer = telefonnummer;
 		if (studiekontrolstatus == null) {
 			this.studiekontrolstatus = Studiekontrolstatus.IKKEIGANG;
@@ -84,13 +84,6 @@ public class Beboer {
 		this.indflytningsdato = indflytningsdato;
 	}
 
-	public LocalDate getLejeaftalensUdløb() {
-		return lejeaftalensUdløb;
-	}
-
-	public void setLejeaftalensUdløb(LocalDate sidsteStudiekontrol) {
-		this.lejeaftalensUdløb = sidsteStudiekontrol;
-	}
 
 	public String getTelefonnummer() {
 		return telefonnummer;
@@ -143,6 +136,14 @@ public class Beboer {
 
 	public String getStatusPåStudiekontrol() {
 		return statusPåStudiekontrol;
+	}
+
+	public LocalDate getLejeaftalensUdløb() {
+		return lejeaftalensUdløb;
+	}
+
+	public void setLejeaftalensUdløb(LocalDate lejeaftalensUdløb) {
+		this.lejeaftalensUdløb = lejeaftalensUdløb;
 	}
 
 //	public void setStatusPåStudiekontrol(String statusPåStudiekontrol) {

@@ -1,6 +1,5 @@
 package controller;
 
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.util.SystemOutLogger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 //import javafx.scene.control.Cell;
@@ -43,7 +43,9 @@ public class ExcelConnection {
 	private ArrayList<Værelsesudlejning> værelsesudlejning = new ArrayList<Værelsesudlejning>();
 	private ArrayList<Dispensation> dispensationer = new ArrayList<Dispensation>();
 	private String filnavn = "IndstillingsInfo.xlsx";
-//	private String filnavn = "C:/Users/Janus/Dropbox/Indstillingen/Beboerliste/IndstillingsInfo.xlsx"; - Denne virker til DropBox Fra min PC
+	// private String filnavn =
+	// "C:/Users/Janus/Dropbox/Indstillingen/Beboerliste/IndstillingsInfo.xlsx"; -
+	// Denne virker til DropBox Fra min PC
 
 	public ArrayList<Dispensation> getDispensationer() {
 		return dispensationer;
@@ -90,7 +92,7 @@ public class ExcelConnection {
 	}
 
 	public ExcelConnection() {
-
+// TODO nødt til at finde på noget så det hele ikke slettes når den ikke kan finde filen
 		try (FileInputStream fis = new FileInputStream(filnavn)) {// evt. bare et tjek istedet for at oprette fis
 			hentBeboereFraExcel(); // beboere oprettes
 			hentDeadlinesFraExcel();
@@ -115,9 +117,9 @@ public class ExcelConnection {
 			Workbook workbook = WorkbookFactory.create(fis);
 
 			int startRække = 1;// Starter på 1 for ikke at tage overskrifter med
-
+System.out.println(startRække + "Her starter jeg");
 			int slutRække = workbook.getSheetAt(1).getLastRowNum();
-
+			System.out.println(slutRække + " Her slutter jeg");
 			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(1).getRow(i);
 
@@ -136,8 +138,10 @@ public class ExcelConnection {
 				LocalDate dispSlut = konverterDateTilLocalDate(d1);
 
 				String dispID = row.getCell(++kollonnenummer).getStringCellValue();
-
-				String deadlinesID = row.getCell(++kollonnenummer).getStringCellValue();
+				
+				String deadlinesID = null;
+				if(row.getCell(kollonnenummer+1).getStringCellValue() != null || ! row.getCell(kollonnenummer+1).getStringCellValue().equals(""))
+				deadlinesID = row.getCell(++kollonnenummer).getStringCellValue();
 
 				boolean iGang = row.getCell(++kollonnenummer).getBooleanCellValue();
 
@@ -148,7 +152,7 @@ public class ExcelConnection {
 				Dispensation dispensation = new Dispensation(beboer, dispStart, dispSlut, iGang, dispID, dispDeadlines,
 						null);
 				dispensationer.add(dispensation);
-
+				System.out.println("Jeg komemr ind");
 			}
 			fis.close();
 			workbook.close();
@@ -203,8 +207,21 @@ public class ExcelConnection {
 		return null;
 
 	}
+	public ArrayList<Beboer> findBeboereTilOpretStudiekontrol(int månedsnummer){
+		System.out.println("Dette er månedsnummer" + månedsnummer) ;
+		ArrayList<Beboer> temp = new ArrayList<Beboer>();
+		for(Beboer b: beboere) {
+			if (b.getLejeaftalensUdløb().getMonthValue() == månedsnummer) {//TODO evt. check om den tager forskellige år
+				b.setStudiekontrolstatus(Studiekontrolstatus.IKKEAFLEVERET);
+				
+				opretBeboerIExcel(b);
+				temp.add(b);
+			}
+		}
+		return temp;
+	}
 
-	private void hentStudiekontrollerfraExcel() {
+	public void hentStudiekontrollerfraExcel() {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
 			Workbook workbook = WorkbookFactory.create(fis);
@@ -212,35 +229,44 @@ public class ExcelConnection {
 			int startRække = 1;// +1 for ikk at tageoverskriften med
 
 			int slutRække = workbook.getSheetAt(4).getLastRowNum();
+			System.out.println(slutRække);
 
 			// Opretter studiekontrolelementerne uden beboere der skal indgå
-			for (int i = startRække; i < slutRække; i++) {
+			for (int i = startRække; i <= slutRække; i++) {
+
 				Row row = workbook.getSheetAt(4).getRow(i);
+				
+				//Tjekker om studiekontrollen er i gang
+				boolean afsluttet = row.getCell(4).getBooleanCellValue();
+				System.out.println("Her kan jeg godt finde til");
+				if (afsluttet == false) {
+					System.out.println("Her kan jeg ikke finde");
+					int kollonnenummer = 0;
 
-				int kollonnenummer = 0;
+					Date d1 = row.getCell(kollonnenummer).getDateCellValue();
+					LocalDate afleveringsfrist = konverterDateTilLocalDate(d1);
 
-				Date d1 = row.getCell(kollonnenummer).getDateCellValue();
-				LocalDate afleveringsfrist = konverterDateTilLocalDate(d1);
+					Date d2 = row.getCell(++kollonnenummer).getDateCellValue();
+					LocalDate påmindelsesdato = konverterDateTilLocalDate(d2);
 
-				Date d2 = row.getCell(++kollonnenummer).getDateCellValue();
-				LocalDate påmindelsesdato = konverterDateTilLocalDate(d2);
+					Date d3 = row.getCell(++kollonnenummer).getDateCellValue();
+					LocalDate begyndelsesdato = konverterDateTilLocalDate(d3);
 
-				Date d3 = row.getCell(++kollonnenummer).getDateCellValue();
-				LocalDate begyndelsesdato = konverterDateTilLocalDate(d3);
+					int månedsnummer = (int) row.getCell(++kollonnenummer).getNumericCellValue(); // de +4 giver den måned der
+													//TODO check om tidligere udgave med %12 bør anvendes i stedet								// påbegyndes
+																					// for.
+					Boolean afsluttet2 = row.getCell(++kollonnenummer).getBooleanCellValue();
 
-				int månedsnummer = (begyndelsesdato.getMonthValue() + 4) % 12; // de +4 giver den måned der påbegyndes
-																				// for.
-				Boolean afsluttet = row.getCell(++kollonnenummer).getBooleanCellValue();
-
-				String studiekontrolID = row.getCell(++kollonnenummer).getStringCellValue();
-
-				Studiekontrol studiekontrol = new Studiekontrol(null, afleveringsfrist, påmindelsesdato,
-						begyndelsesdato, månedsnummer, afsluttet, studiekontrolID);
-				studiekontroller.add(studiekontrol);
-
-			}
+					String studiekontrolID = row.getCell(++kollonnenummer).getStringCellValue();
+					
+					Studiekontrol studiekontrol = new Studiekontrol(null, afleveringsfrist, påmindelsesdato,
+							begyndelsesdato, månedsnummer, afsluttet2, studiekontrolID);
+					studiekontroller.add(studiekontrol);
+				}
+			}//TODO lav til separat metode der kaldes i ovenstående loop
 			// tilføjer beboere til studiekontroller hvis der er nogen
 			if (studiekontroller.size() > 0) {
+				System.out.println(studiekontroller.size() + " er størrelsen");
 				for (int j = 0; j < studiekontroller.size(); j++) {
 					int måned = studiekontroller.get(j).getMånedsnummer();
 					ArrayList<Beboer> list = new ArrayList<Beboer>();
@@ -263,6 +289,69 @@ public class ExcelConnection {
 
 		// Første to loops henter alle de igangværende studiekontroller ind
 
+	}
+	public String findMånedsNavn(int månedsNummer) {
+		switch (månedsNummer) {
+		case 0:
+			return "December";
+		case 1:
+			return "Januar";
+		case 2:
+			return "Februar";
+		case 3:
+			return "Marts";
+		case 4:
+			return "April";
+		case 5:
+			return "Maj";
+		case 6:
+			return "Juni";
+		case 7:
+			return "Juli";
+		case 8:
+			return "August";
+		case 9:
+			return "September";
+		case 10:
+			return "Oktober";
+		case 11:
+			return "November";
+		case 12:
+			return "December";
+		default:
+			return "Fejl";
+		}
+		
+	}
+	public int findMånedsNummer(String månedsNavn) {
+		switch (månedsNavn) {
+		case "Januar":
+			return 1;
+		case "Februar":
+			return 2;
+		case "Marts":
+			return 3;
+		case "April":
+			return 4;
+		case "Maj":
+			return 5;
+		case "Juni":
+			return 6;
+		case "Juli":
+			return 7;
+		case "August":
+			return 8;
+		case "September":
+			return 9;
+		case "Oktober":
+			return 10;
+		case "November":
+			return 11;
+		case "December":
+			return 12;
+		default:
+			return 0;
+		}
 	}
 
 	/**
@@ -291,15 +380,14 @@ public class ExcelConnection {
 
 				String navn = row.getCell(++kollonnenummer).getStringCellValue();
 
-				//kan ikke hente "tomme" date celler, så det tjekkes der for
+				// kan ikke hente "tomme" date celler, så det tjekkes der for
 				LocalDate behandlingsdato;
 				Cell c = row.getCell(++kollonnenummer);
-				if(c != null) {
-				Date d2 = row.getCell(kollonnenummer).getDateCellValue();
-				behandlingsdato = konverterDateTilLocalDate(d2);
-				}else
+				if (c != null) {
+					Date d2 = row.getCell(kollonnenummer).getDateCellValue();
+					behandlingsdato = konverterDateTilLocalDate(d2);
+				} else
 					behandlingsdato = null;
-				
 
 				String behandlerinitialer = row.getCell(++kollonnenummer).getStringCellValue();
 
@@ -379,6 +467,7 @@ public class ExcelConnection {
 		}
 
 	}
+
 	public static String konverterEnumTilStringHelp(Studiekontrolstatus studiekontrolstatus) {
 		String s;
 		switch (studiekontrolstatus) {
@@ -446,8 +535,8 @@ public class ExcelConnection {
 				Enum<Studiekontrolstatus> studiekontrolstatus = konverterStringTilEnum(
 						row.getCell(++kollonnenummer).getStringCellValue());
 
-				Beboer beboer = new Beboer(værelse, navn, fremlejeStartdato, fremlejeSlutdato,
-						telefonnummer, studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
+				Beboer beboer = new Beboer(værelse, navn, fremlejeStartdato, fremlejeSlutdato, telefonnummer,
+						studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
 				this.fremlejere.add(beboer);
 				System.out.println(beboer.getNavn());
 
@@ -516,7 +605,7 @@ public class ExcelConnection {
 			boolean deadlineFindes = false;
 			System.out.println(slutRække);
 			// Loop gennem excel dokumentet og find rækkepladsen
-//			if(slutRække)
+			// if(slutRække)
 			for (int i = startRække; i <= slutRække; i++) {
 				String s = workbook.getSheetAt(3).getRow(i).getCell(4).getStringCellValue();
 				// Hvis det passer, så skriv til værelsesnummeret
@@ -568,7 +657,6 @@ public class ExcelConnection {
 
 	}
 
-	
 	public void opretDispensationIExcel(Dispensation dispensation) {
 		try {
 			FileInputStream fis = new FileInputStream(filnavn);
@@ -779,11 +867,9 @@ public class ExcelConnection {
 					Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(d1);
 
-					workbook.getSheetAt(0).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelsessted());
+					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(beboer.getUddannelsessted());
 
-					workbook.getSheetAt(0).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelsesretning());
+					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(beboer.getUddannelsesretning());
 
 					Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 					workbook.getSheetAt(0).getRow(i).getCell(++celleNr).setCellValue(d2);
@@ -812,12 +898,9 @@ public class ExcelConnection {
 				Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(2).setCellValue(d1);
 
+				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(3).setCellValue(beboer.getUddannelsessted());
 
-				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(3)
-						.setCellValue(beboer.getUddannelsessted());
-
-				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(4)
-						.setCellValue(beboer.getUddannelsesretning());
+				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(4).setCellValue(beboer.getUddannelsesretning());
 
 				Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(5).setCellValue(d2);
@@ -862,21 +945,21 @@ public class ExcelConnection {
 
 				// Hvis det passer, så skriv til værelsesnummeret
 				if (sVærelse.equals(værelsesudlejning.getVærelse())) {
-					if(sNavn == null ||sNavn.equals("")){ // Her bør der måsjke være ==.equals("");
+					if (sNavn == null || sNavn.equals("")) { // Her bør der måsjke være ==.equals("");
 						int celleNr = 0;
 
 						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
 						workbook.getSheetAt(5).getRow(i).getCell(celleNr).setCellValue(d1);
 
-						++celleNr; //Går hen over værelsesnummeret
+						++celleNr; // Går hen over værelsesnummeret
 
-						workbook.getSheetAt(5).getRow(i).getCell(++celleNr)
-								.setCellValue(værelsesudlejning.getNavn());
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(værelsesudlejning.getNavn());
 
 						Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
-						workbook.getSheetAt(5).getRow(i).createCell(++celleNr).setCellValue(d2); //TODO
+						workbook.getSheetAt(5).getRow(i).createCell(++celleNr).setCellValue(d2); // TODO
 
-						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(værelsesudlejning.getBehandlerInitialer());
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr)
+								.setCellValue(værelsesudlejning.getBehandlerInitialer());
 
 						værelsesudlejningFindes = true;
 
@@ -890,19 +973,25 @@ public class ExcelConnection {
 				Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(celleNr).setCellValue(d1);
 
-				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(værelsesudlejning.getVærelse());
-
-				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue("");//Navn er null hvis værelset ikke skal udlejes
-				
-				if(værelsesudlejning.getBehandlingsdato() != null) {
-				Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
-						.setCellValue(d2);
-				}else
+						.setCellValue(værelsesudlejning.getVærelse());
+
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue("");// Navn er null hvis
+																									// værelset ikke
+																									// skal udlejes
+
+				if (værelsesudlejning.getBehandlingsdato() != null) {
+					Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
+					workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d2);
+				} else
 					++celleNr;
 
-				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr)
-						.setCellValue(""); //Behandler initialer er = "" hvis ikke det er blevet udlejet endnu
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(""); // Behandler
+																										// initialer er
+																										// = "" hvis
+																										// ikke det er
+																										// blevet
+																										// udlejet endnu
 
 			}
 
@@ -926,7 +1015,7 @@ public class ExcelConnection {
 			int slutRække = workbook.getSheetAt(4).getLastRowNum();
 			boolean studiekontrolFindes = false;
 
-			// Loop gennem excel dokumentet og find rækkepladsen
+			// Loop gennem excel dokumentet og find rækkepladsen eller ej
 			for (int i = startRække; i <= slutRække; i++) {
 				String s = workbook.getSheetAt(4).getRow(i).getCell(5).getStringCellValue();
 
@@ -965,7 +1054,7 @@ public class ExcelConnection {
 				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d2);
 
 				Date d3 = konverterLocalDateTilDate(studiekontrol.getPåbegyndelsesdato());
-				workbook.getSheetAt(4).getRow(slutRække + 1).getCell(++celleNr).setCellValue(d3);
+				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d3);
 
 				workbook.getSheetAt(4).getRow(slutRække + 1).createCell(++celleNr)
 						.setCellValue(studiekontrol.getMånedsnummer());
@@ -989,8 +1078,9 @@ public class ExcelConnection {
 		}
 
 	}
+
 	public void afslutFremleje() {
-		
+
 	}
 
 	public void opretFremlejerIExcel(Beboer beboer) { //
@@ -1014,11 +1104,9 @@ public class ExcelConnection {
 					Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(d1);
 
-					workbook.getSheetAt(2).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelsessted());
+					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(beboer.getUddannelsessted());
 
-					workbook.getSheetAt(2).getRow(i).getCell(++celleNr)
-							.setCellValue(beboer.getUddannelsesretning());
+					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(beboer.getUddannelsesretning());
 
 					Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 					workbook.getSheetAt(2).getRow(i).getCell(++celleNr).setCellValue(d2);
@@ -1041,20 +1129,17 @@ public class ExcelConnection {
 			if (beboerFindes == false) {
 
 				workbook.getSheetAt(2).createRow(slutRække + 1);
-				
-				
+
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(0).setCellValue(beboer.getVærelse());
-				
+
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(1).setCellValue(beboer.getNavn());
 
 				Date d1 = konverterLocalDateTilDate(beboer.getIndflytningsdato());
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(2).setCellValue(d1);
 
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(3)
-						.setCellValue(beboer.getUddannelsessted());
+				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(3).setCellValue(beboer.getUddannelsessted());
 
-				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(4)
-						.setCellValue(beboer.getUddannelsesretning());
+				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(4).setCellValue(beboer.getUddannelsesretning());
 
 				Date d2 = konverterLocalDateTilDate(beboer.getPåbegyndtDato());
 				workbook.getSheetAt(2).getRow(slutRække + 1).createCell(5).setCellValue(d2);
@@ -1096,9 +1181,9 @@ public class ExcelConnection {
 			Workbook workbook = WorkbookFactory.create(fis);
 
 			int startRække = 1;// Starter på 1 for ikke at tage overskrifter med
-
+			System.out.println("start " + startRække);
 			int slutRække = workbook.getSheetAt(0).getLastRowNum();
-
+			System.out.println("slut " + slutRække);
 			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(0).getRow(i);
 

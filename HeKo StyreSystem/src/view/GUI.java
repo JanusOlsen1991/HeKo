@@ -296,6 +296,16 @@ public class GUI {
 		borderP.setCenter(tP);
 
 		TableView<Dispensation> tView = new TableView<Dispensation>();
+		// Start knappen
+		Button startDispButton = new Button("Kom i gang");
+		startDispButton.setOnAction(e -> {
+			popUp.opretDispensation(ec, tView, tViewHMenu);// , tView
+		});
+		
+
+
+		tView.setPlaceholder(startDispButton);
+
 
 		TableColumn<Dispensation, String> værelseColumn = new TableColumn<Dispensation, String>("Værelse");
 		værelseColumn.setCellValueFactory(new PropertyValueFactory<>("beboerVærelse"));
@@ -313,16 +323,10 @@ public class GUI {
 			TableRow<Dispensation> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-
+					//TODO Opret - rediger i dispensations metode.
 					Dispensation clickedRow = row.getItem();
 					popUp.redigerDispensation(clickedRow, ec, tView, tViewHMenu);
 				}
-			});
-			return row;
-		});
-		tView.setRowFactory(tv -> {
-			TableRow<Dispensation> row = new TableRow<>();
-			row.setOnMouseClicked(event -> {
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					popUp.opretDispensation(ec, tView, tViewHMenu);// , tView
@@ -331,13 +335,7 @@ public class GUI {
 			return row;
 		});
 
-		// Start knappen
-		Button startDispButton = new Button("Kom i gang");
-		startDispButton.setOnAction(e -> {
-			popUp.opretDispensation(ec, tView, tViewHMenu);// , tView
-		});
 
-		tView.setPlaceholder(startDispButton);
 
 		Tab tab1 = new Tab("Aktive dispensationer");
 		tab1.setClosable(false);
@@ -363,6 +361,7 @@ public class GUI {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void studieKontrolMenu(Stage primaryStage) {
 		// overordnet layout genereres
 		BorderPane borderP = new BorderPane();
@@ -372,7 +371,7 @@ public class GUI {
 			try {
 				hovedMenu(primaryStage);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+
 				e1.printStackTrace();
 			}
 		});
@@ -385,129 +384,145 @@ public class GUI {
 		borderP.setCenter(tP);
 
 		TableView<Beboer> tView1 = new TableView<Beboer>();
+		// kolloner til Tableviews
+		TableColumn<Beboer, String> værelseColumn = new TableColumn<Beboer, String>("Værelse");
+		værelseColumn.setCellValueFactory(new PropertyValueFactory<>("værelse"));
+		TableColumn<Beboer, String> navnColumn = new TableColumn<Beboer, String>("Navn");
+		navnColumn.setCellValueFactory(new PropertyValueFactory<>("navn"));
+		TableColumn<Beboer, LocalDate> indflytningColumn = new TableColumn<Beboer, LocalDate>("indflytningsdato");
+		indflytningColumn.setCellValueFactory(new PropertyValueFactory<>("indflytningsdato"));
+		TableColumn<Beboer, String> uddRetningColumn = new TableColumn<Beboer, String>("Uddannelsesretning");
+		uddRetningColumn.setCellValueFactory(new PropertyValueFactory<>("uddannelsesretning"));
+		TableColumn<Beboer, String> uddStedColumn = new TableColumn<Beboer, String>("Uddannelsessted");
+		uddStedColumn.setCellValueFactory(new PropertyValueFactory<>("uddannelsessted"));
+		TableColumn<Beboer, LocalDate> påbegyndtUddColumn = new TableColumn<Beboer, LocalDate>("Uddannelse påbegyndt");
+		påbegyndtUddColumn.setCellValueFactory(new PropertyValueFactory<>("påbegyndtDato"));
+		TableColumn<Beboer, LocalDate> afslutningUddColumn = new TableColumn<Beboer, LocalDate>(
+				"Uddannelse forventes afsluttet");
+		afslutningUddColumn.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
+		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn = new TableColumn<Beboer, LocalDate>(
+				"Lejeaftalens udløb");
+		lejeaftalensUdløbColumn.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		TableColumn<Beboer, String> studieKStatColumn = new TableColumn<Beboer, String>("Status på studiekontrol");
+		studieKStatColumn.setCellValueFactory(new PropertyValueFactory<>("statusPåStudiekontrol"));
 
-		// Tabs herunder skal oprettes KUN "når de er i gang".
+		// TableViews oprettes med kollonnerne
+		tView1.getColumns().addAll(værelseColumn, navnColumn, indflytningColumn, uddRetningColumn, uddStedColumn,
+				påbegyndtUddColumn, afslutningUddColumn, lejeaftalensUdløbColumn, studieKStatColumn);
+		tView1.getItems().add(getAlleStudiekontroller());
+
+		Button opretButton = new Button("Start ny studiekontrol");
+		opretButton.setOnAction(event -> {
+			popUp.startStudiekontrol(tView1, ec);
+			// TODO Der kommer til at være fejl i gui da den ikke opretter den nye tab med
+			// det samme - kan evt. oprette tab separat og returnere den
+		});
+
+		VBox firstTabLayout = new VBox(tView1, opretButton);
 
 		Tab tab1 = new Tab("Alle igangværende studiekontroller");
 		tab1.setClosable(false);
-		ArrayList<Studiekontrol> list = ec.getStudiekontroller();// TODO skal nok frasortere ikke i gangværende
-																	// studiekontroller
-		for (Studiekontrol sk : list) {
-			String s = findMånedsNavn(sk.getMånedsnummer());
-			Tab t = new Tab(s);
-			t.setClosable(false);
 
-			Label skID = new Label(sk.getStudiekontrolID());
-			Label skSTART = new Label(sk.getPåbegyndelsesdato().toString());
-			Label skSLUT = new Label(sk.getAfleveringsfrist().toString());
-
-			Label l1 = new Label("Studiekontrol ID");
-			Label l2 = new Label("påbegyndt d. ");
-			Label l3 = new Label("Afsluttes d. ");
-
-			TableColumn<Beboer, String> værelseColumn = new TableColumn<Beboer, String>("Værelse");
-			værelseColumn.setCellValueFactory(new PropertyValueFactory<>("værelse"));
-			TableColumn<Beboer, String> navnColumn = new TableColumn<Beboer, String>("Navn");
-			navnColumn.setCellValueFactory(new PropertyValueFactory<>("navn"));
-			TableColumn<Beboer, LocalDate> indflytningColumn = new TableColumn<Beboer, LocalDate>("indflytningsdato");
-			indflytningColumn.setCellValueFactory(new PropertyValueFactory<>("indflytningsdato"));
-			TableColumn<Beboer, String> uddRetningColumn = new TableColumn<Beboer, String>("Uddannelsesretning");
-			uddRetningColumn.setCellValueFactory(new PropertyValueFactory<>("uddannelsesretning"));
-			TableColumn<Beboer, String> uddStedColumn = new TableColumn<Beboer, String>("Uddannelsessted");
-			uddStedColumn.setCellValueFactory(new PropertyValueFactory<>("uddannelsessted"));
-			TableColumn<Beboer, LocalDate> påbegyndtUddColumn = new TableColumn<Beboer, LocalDate>(
-					"Uddannelse påbegyndt");
-			påbegyndtUddColumn.setCellValueFactory(new PropertyValueFactory<>("påbegyndtDato"));
-			TableColumn<Beboer, LocalDate> afslutningUddColumn = new TableColumn<Beboer, LocalDate>(
-					"Uddannelse forventes afsluttet");
-			afslutningUddColumn.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
-			TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn = new TableColumn<Beboer, LocalDate>(
-					"Lejeaftalens udløb");
-			lejeaftalensUdløbColumn.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
-			
-			//TODO ekstra kollonne med status på studiekontrol
-
-			TableView<Beboer> tView = new TableView<Beboer>();
-			tView.getColumns().addAll(værelseColumn, navnColumn, indflytningColumn, uddRetningColumn, uddStedColumn,
-					påbegyndtUddColumn, afslutningUddColumn, lejeaftalensUdløbColumn);
-			
-			Button bAfslut = new Button("Afslut denne studiekontrol");
-			bAfslut.setOnAction(event -> {
-				popUp.afslutStudiekontrol(findMånedsNavn(sk.getMånedsnummer()), sk.getBeboere(), ec, tView);
-				});
-			
-			GridPane gp = new GridPane();
-			gp.add(l1, 3, 3);
-			gp.add(l2, 6, 3);
-			gp.add(l3, 9, 3);
-			
-			gp.add(skID, 3, 5);
-			gp.add(skSTART, 6, 5);
-			gp.add(skSLUT, 9, 5);
-			gp.add(bAfslut, 12, 3, 1, 3);	
-			
-			
-			gp.add(tView, 1, 12, 10, 10);
-			
-
-
-			t.setContent(gp);
-
-		}
-
-		// kolloner til Tableviews
-		TableColumn værelseColumn = new TableColumn("Værelse");
-		TableColumn navnColumn = new TableColumn("Navn");
-		TableColumn indflytningColumn = new TableColumn("indflytningsdato");
-		TableColumn uddannelseColumn = new TableColumn("Uddannelse");
-		TableColumn uddStedColumn = new TableColumn("Uddannelsessted");
-		TableColumn påbegyndtUddColumn = new TableColumn("Uddannelse påbegyndt");
-		TableColumn afslutningUddColumn = new TableColumn("Uddannelse forventes afsluttet");
-		TableColumn lejeaftalensUdløbColumn = new TableColumn("Lejeaftalens udløb");
-
-		// TableViews oprettes med kollonnerne
-		tView1.getColumns().addAll(værelseColumn, navnColumn, uddannelseColumn, påbegyndtUddColumn, afslutningUddColumn,
-				lejeaftalensUdløbColumn);
-
-		// Første tab: Alle beboere
-
-		tab1.setContent(tView1);
+		tab1.setContent(firstTabLayout);// TODO layout ikke kun tView1
 
 		tP.getTabs().add(tab1);
+		// Tabs herunder skal oprettes KUN "når de er i gang".
+		ArrayList<Studiekontrol> list = ec.getStudiekontroller();
+		System.out.println("her er der" + ec.getStudiekontroller().size());
+		if (ec.getStudiekontroller().size() > 0)
+			for (Studiekontrol sk : list) {
+				String s = ec.findMånedsNavn(sk.getMånedsnummer());
+				Tab t = new Tab(s);
+				t.setClosable(false);
+
+				Label skID = new Label(sk.getStudiekontrolID());
+				Label skSTART = new Label(sk.getPåbegyndelsesdato().toString());
+				Label skSLUT = new Label(sk.getAfleveringsfrist().toString());
+
+				Label l1 = new Label("Studiekontrol ID");
+				Label l2 = new Label("påbegyndt d. ");
+				Label l3 = new Label("Afsluttes d. ");
+
+				TableColumn<Beboer, String> værelseColumn1 = new TableColumn<Beboer, String>("Værelse");
+				værelseColumn1.setCellValueFactory(new PropertyValueFactory<>("værelse"));
+				TableColumn<Beboer, String> navnColumn1 = new TableColumn<Beboer, String>("Navn");
+				navnColumn1.setCellValueFactory(new PropertyValueFactory<>("navn"));
+				TableColumn<Beboer, LocalDate> indflytningColumn1 = new TableColumn<Beboer, LocalDate>(
+						"indflytningsdato");
+				indflytningColumn1.setCellValueFactory(new PropertyValueFactory<>("indflytningsdato"));
+				TableColumn<Beboer, String> uddRetningColumn1 = new TableColumn<Beboer, String>("Uddannelsesretning");
+				uddRetningColumn1.setCellValueFactory(new PropertyValueFactory<>("uddannelsesretning"));
+				TableColumn<Beboer, String> uddStedColumn1 = new TableColumn<Beboer, String>("Uddannelsessted");
+				uddStedColumn1.setCellValueFactory(new PropertyValueFactory<>("uddannelsessted"));
+				TableColumn<Beboer, LocalDate> påbegyndtUddColumn1 = new TableColumn<Beboer, LocalDate>(
+						"Uddannelse påbegyndt");
+				påbegyndtUddColumn1.setCellValueFactory(new PropertyValueFactory<>("påbegyndtDato"));
+				TableColumn<Beboer, LocalDate> afslutningUddColumn1 = new TableColumn<Beboer, LocalDate>(
+						"Uddannelse forventes afsluttet");
+				afslutningUddColumn1.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
+				TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn1 = new TableColumn<Beboer, LocalDate>(
+						"Lejeaftalens udløb");
+				lejeaftalensUdløbColumn1.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+				TableColumn<Beboer, String> studieKStatColumn1 = new TableColumn<Beboer, String>();
+				studieKStatColumn1.setCellValueFactory(new PropertyValueFactory<>("statusPåStudiekontrol"));
+
+				TableView<Beboer> tView = new TableView<Beboer>();
+
+				tView.setRowFactory(tv -> {
+					TableRow<Beboer> row = new TableRow<>();
+					row.setOnMouseClicked(event -> {
+						if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+							Beboer clickedRow = row.getItem();
+							popUp.redigerBeboeroplysninger(clickedRow, ec, tView, true);
+
+						}
+					});
+					return row;
+				});
+
+				// Henter beboere fra studiekontrollen
+				ObservableList<Beboer> beboereTilMåned = FXCollections.observableArrayList(sk.getBeboere());
+				System.out.println("Her er der " +beboereTilMåned.size());
+				
+				tView.getItems().addAll(beboereTilMåned);
+				tView1.getItems().addAll(beboereTilMåned); // TODO lægger den studiekontrollerne til? - ellers må alle
+															// studiekontroller loades
+
+				tView.getColumns().addAll(værelseColumn, navnColumn, indflytningColumn, uddRetningColumn, uddStedColumn,
+						påbegyndtUddColumn, afslutningUddColumn, lejeaftalensUdløbColumn, studieKStatColumn);
+
+				Button bAfslut = new Button("Afslut denne studiekontrol");
+				bAfslut.setOnAction(event -> {
+					popUp.afslutStudiekontrol(ec.findMånedsNavn(sk.getMånedsnummer()), sk.getBeboere(), ec, tView);
+				});
+
+				GridPane gp = new GridPane();
+				gp.add(l1, 3, 3);
+				gp.add(l2, 6, 3);
+				gp.add(l3, 9, 3);
+
+				gp.add(skID, 3, 5);
+				gp.add(skSTART, 6, 5);
+				gp.add(skSLUT, 9, 5);
+				gp.add(bAfslut, 12, 3, 1, 3);
+
+				gp.add(tView, 1, 12, 10, 10);
+
+				t.setContent(gp);
+				// Tilføjer tabs til tabPane
+				tP.getTabs().add(t);
+
+			}
+
 		scene = new Scene(borderP, 900, 700);
 		primaryStage.setScene(scene);
 
 	}
 
-	private String findMånedsNavn(int månedsNummer) {
-		switch (månedsNummer) {
-		case 1:
-			return "Januar";
-		case 2:
-			return "Februar";
-		case 3:
-			return "Marts";
-		case 4:
-			return "April";
-		case 5:
-			return "Maj";
-		case 6:
-			return "Juni";
-		case 7:
-			return "Juli";
-		case 8:
-			return "August";
-		case 9:
-			return "September";
-		case 10:
-			return "Oktober";
-		case 11:
-			return "November";
-		case 12:
-			return "December";
-		default:
-			return "fejl";
-		}
+	private Beboer getAlleStudiekontroller() {
+		// TODO Auto-generated method stub
+		
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -521,7 +536,7 @@ public class GUI {
 			try {
 				hovedMenu(primaryStage);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+
 				e1.printStackTrace();
 			}
 		});
@@ -561,7 +576,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					System.out.println("Jeg komemr her");
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView1);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView1, false);
 
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
@@ -585,7 +600,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView2);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView2, false);
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
@@ -600,7 +615,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView3);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView3, false);
 
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
@@ -616,7 +631,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView4);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView4, false);
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
@@ -631,7 +646,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView5);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView5, false);
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
@@ -646,7 +661,7 @@ public class GUI {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Beboer clickedRow = row.getItem();
-					popUp.redigerBeboeroplysninger(clickedRow, ec, tView6);
+					popUp.redigerBeboeroplysninger(clickedRow, ec, tView6, false);
 				}
 				if (row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 					popUp.opretNyBeboeroplysninger(ec, tView1, tView2, tView3, tView4, tView5, tView6);
@@ -674,8 +689,8 @@ public class GUI {
 				"Uddannelse forventes afsluttet");
 		afslutningUddColumn.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn = new TableColumn<Beboer, LocalDate>(
-				"Lejeaftalens udløb"); // SLET? - Måske for forvirrende,
-		påbegyndtUddColumn.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+				"Lejeaftalens udløb");
+		lejeaftalensUdløbColumn.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 
 		// 2. sal
 		TableColumn<Beboer, String> værelseColumn2 = new TableColumn<Beboer, String>("Værelse");
@@ -697,7 +712,7 @@ public class GUI {
 		afslutningUddColumn2.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn2 = new TableColumn<Beboer, LocalDate>(
 				"Lejeaftalens udløb"); // SLET? - Måske for forvirrende,
-		påbegyndtUddColumn2.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		lejeaftalensUdløbColumn2.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 
 		// 3. sal
 		TableColumn<Beboer, String> værelseColumn3 = new TableColumn<Beboer, String>("Værelse");
@@ -719,7 +734,7 @@ public class GUI {
 		afslutningUddColumn3.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn3 = new TableColumn<Beboer, LocalDate>(
 				"Lejeaftalens udløb"); // SLET? - Måske for forvirrende,
-		påbegyndtUddColumn3.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		lejeaftalensUdløbColumn3.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 
 		// 4. sal
 		TableColumn<Beboer, String> værelseColumn4 = new TableColumn<Beboer, String>("Værelse");
@@ -741,7 +756,7 @@ public class GUI {
 		afslutningUddColumn4.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn4 = new TableColumn<Beboer, LocalDate>(
 				"Lejeaftalens udløb"); // SLET? - Måske for forvirrende,
-		påbegyndtUddColumn4.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		lejeaftalensUdløbColumn4.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 
 		// 5. sal
 		TableColumn<Beboer, String> værelseColumn5 = new TableColumn<Beboer, String>("Værelse");
@@ -763,7 +778,7 @@ public class GUI {
 		afslutningUddColumn5.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn5 = new TableColumn<Beboer, LocalDate>(
 				"Lejeaftalens udløb");
-		påbegyndtUddColumn5.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		lejeaftalensUdløbColumn5.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 
 		TableColumn<Beboer, String> værelseColumn6 = new TableColumn<Beboer, String>("Værelse");
 		værelseColumn6.setCellValueFactory(new PropertyValueFactory<>("værelse"));
@@ -784,7 +799,7 @@ public class GUI {
 		afslutningUddColumn6.setCellValueFactory(new PropertyValueFactory<>("forventetAfsluttetDato"));
 		TableColumn<Beboer, LocalDate> lejeaftalensUdløbColumn6 = new TableColumn<Beboer, LocalDate>(
 				"Lejeaftalens udløb"); // SLET? - Måske for forvirrende,
-		påbegyndtUddColumn6.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
+		lejeaftalensUdløbColumn6.setCellValueFactory(new PropertyValueFactory<>("lejeaftalensUdløb"));
 		// TableViews oprettes med kollonnerne
 
 		tView1.setItems(getBeboere('1'));
