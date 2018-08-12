@@ -238,9 +238,9 @@ System.out.println(startRække + "Her starter jeg");
 				
 				//Tjekker om studiekontrollen er i gang
 				boolean afsluttet = row.getCell(4).getBooleanCellValue();
-				System.out.println("Her kan jeg godt finde til");
+
 				if (afsluttet == false) {
-					System.out.println("Her kan jeg ikke finde");
+
 					int kollonnenummer = 0;
 
 					Date d1 = row.getCell(kollonnenummer).getDateCellValue();

@@ -502,7 +502,6 @@ public class GUI_PopUps {
 		Button påbegyndButton = new Button("Påbegynd studiekontrol");
 		påbegyndButton.setOnAction(e -> {
 			// TODO Skal også skrives til Word
-			// System.out.println(ec.findMånedsNummer(udløbsmåned.getValue().toString()));
 			ArrayList<Beboer> temp = ec
 					.findBeboereTilOpretStudiekontrol(ec.findMånedsNummer(udløbsmåned.getValue().toString()));
 
@@ -591,32 +590,65 @@ public class GUI_PopUps {
 		stage.show();
 	}
 
-	public void afslutStudiekontrol(String måned, ArrayList<Beboer> arrayList, ExcelConnection ec,
-			TableView<Beboer> tView) {
-		stage.setTitle("Afslut studiekontrol for " + måned);
+	public void afslutStudiekontrol(Studiekontrol studiekontrol, ExcelConnection ec, TableView<Beboer> tView) {
+		stage.setTitle("Afslut studiekontrol for " + studiekontrol.getStudiekontrolID());
 		GridPane layout = new GridPane();
 
-		Label l1 = new Label("Er du sikker på du vil afslutte studiekontrollen for " + måned
+		TableColumn<Beboer, String> værelse = new TableColumn<Beboer, String>("Værelse");
+		værelse.setCellValueFactory(new PropertyValueFactory<>("værelse"));
+		TableColumn<Beboer, String> navn = new TableColumn<Beboer, String>("Navn");
+		navn.setCellValueFactory(new PropertyValueFactory<>("navn"));
+		TableColumn<Beboer, String> studiekontrolStatus = new TableColumn<Beboer, String>("Status på studiekontrol");
+		studiekontrolStatus.setCellValueFactory(new PropertyValueFactory<>("statusPåStudiekontrol"));
+
+		TableView<Beboer> tView2 = new TableView();
+		tView2.getColumns().addAll(værelse, navn, studiekontrolStatus);
+		
+		//TODO kan laves til separat metode
+		ObservableList<Beboer> beboere = tView.getItems();
+		ObservableList<Beboer> beboereOpsiges = FXCollections.observableArrayList();
+		ObservableList<Beboer> beboereOpsigesIkke = FXCollections.observableArrayList();
+
+		for(Beboer b: beboere) {
+			if(b.getStudiekontrolstatus()!= Studiekontrolstatus.GODKENDT) //&&Status != IKKEIGANG
+				beboereOpsiges.add(b);
+			else //TODO Check om den virker
+				beboereOpsigesIkke.add(b);
+		}
+		tView2.getItems().addAll(beboereOpsiges);
+		
+		Label l1 = new Label("Er du sikker på du vil afslutte studiekontrollen for " + studiekontrol.getStudiekontrolID()
 				+ "\nog sende de herunder listede beboeres oplysninger videre til boligselskabet?");
 		Button jaButton = new Button("Ja");
 		jaButton.setOnAction(event -> {
 			// TODO skriv navnene til fil så de kan sendes til KAB - ÆNDR alle deres
-			// STUDIEKONTROLSTATUS til SENDTTILKAB
+			// STUDIEKONTROLSTATUS til SENDTTILBOLIGSELSKAB
 			// TODO REDIGER studiekontrolsobjektet til afsluttet i excel
+//			Studiekontrol sk = studiekontrol; // - Evt. oprette objektet
+			studiekontrol.setAfsluttet(true);
+			ec.opretStudiekontrollerIExcel(studiekontrol);
+			//Opdaterer i Excel
+			for (Beboer b: beboereOpsigesIkke) {
+				b.setStudiekontrolstatus(Studiekontrolstatus.IKKEIGANG);
+				ec.opretBeboerIExcel(b);
+			}
+			for(Beboer b: beboereOpsiges) {
+				b.setStudiekontrolstatus(Studiekontrolstatus.SENDTTILBOLIGSELSKAB);
+				ec.opretBeboerIExcel(b);
+			}
+			ec.getBeboere().clear();
+			ec.hentBeboereFraExcel();
+			tView.refresh();
+			
+			stage.close();
 		});
 		Button nejButton = new Button("Nej");
 		nejButton.setOnAction(event -> stage.close());
 
-		TableColumn<Beboer, String> værelse = new TableColumn<Beboer, String>();
-		værelse.setCellValueFactory(new PropertyValueFactory<>("værelse"));
-		TableColumn<Beboer, String> navn = new TableColumn<Beboer, String>();
-		navn.setCellValueFactory(new PropertyValueFactory<>("navn"));
-		TableColumn<Beboer, String> studiekontrolStatus = new TableColumn<Beboer, String>();
-		studiekontrolStatus.setCellValueFactory(new PropertyValueFactory<>("statusPåStudiekontrol"));
+		
 
-		TableView<Beboer> tView2 = new TableView();
-		tView2.getColumns().addAll(værelse, navn);
-
+		
+		
 		layout.add(l1, 3, 3, 5, 1);
 
 		layout.add(tView2, 3, 4, 3, 1);
