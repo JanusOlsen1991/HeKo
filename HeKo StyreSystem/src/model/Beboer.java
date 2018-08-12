@@ -2,10 +2,11 @@ package model;
 
 import java.time.LocalDate;
 
+import controller.ExcelConnection;
+
 public class Beboer {
 	private String navn;
 	private String værelse;
-	private Uddannelse uddannelse;
 	private LocalDate indflytningsdato;
 	private LocalDate lejeaftalensUdløb;
 	private String telefonnummer;
@@ -14,7 +15,8 @@ public class Beboer {
 	private String uddannelsessted;
 	private LocalDate påbegyndtDato;
 	private LocalDate forventetAfsluttetDato;
-
+	private String statusPåStudiekontrol;
+	
 	/**
 	 * @param navn
 	 *            : Beboerens navn
@@ -42,12 +44,15 @@ public class Beboer {
 		this.navn = navn;
 		this.værelse = værelse;
 		this.indflytningsdato = indflytningsdato;
-		this.lejeaftalensUdløb = lejeaftalensUdløb;
+		this.setLejeaftalensUdløb(lejeaftalensUdløb);
 		this.telefonnummer = telefonnummer;
 		if (studiekontrolstatus == null) {
-			// this.studiekontrolstatus = Studiek
-		}
+			this.studiekontrolstatus = Studiekontrolstatus.IKKEIGANG;
+			statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
+		} else {
 		this.studiekontrolstatus = studiekontrolstatus;
+		statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
+		}
 		this.setUddannelsessted(uddannelsessted);
 		this.setUddannelsesretning(uddannelsesretning);
 		this.setForventetAfsluttetDato(forventetAfsluttetDato);
@@ -70,13 +75,6 @@ public class Beboer {
 		this.værelse = værelse;
 	}
 
-	public Uddannelse getUddannelse() {
-		return uddannelse;
-	}
-
-	public void setUddannelse(Uddannelse uddannelse) {
-		this.uddannelse = uddannelse;
-	}
 
 	public LocalDate getIndflytningsdato() {
 		return indflytningsdato;
@@ -86,13 +84,6 @@ public class Beboer {
 		this.indflytningsdato = indflytningsdato;
 	}
 
-	public LocalDate getLejeaftalensUdløb() {
-		return lejeaftalensUdløb;
-	}
-
-	public void setLejeaftalensUdløb(LocalDate sidsteStudiekontrol) {
-		this.lejeaftalensUdløb = sidsteStudiekontrol;
-	}
 
 	public String getTelefonnummer() {
 		return telefonnummer;
@@ -108,6 +99,7 @@ public class Beboer {
 
 	public void setStudiekontrolstatus(Enum<Studiekontrolstatus> studiekontrolstatus) {
 		this.studiekontrolstatus = studiekontrolstatus;
+		statusPåStudiekontrol = ExcelConnection.konverterEnumTilStringHelp((Studiekontrolstatus) studiekontrolstatus);
 	}
 
 	public String getUddannelsesretning() {
@@ -141,5 +133,21 @@ public class Beboer {
 	public void setForventetAfsluttetDato(LocalDate forventetAfsluttetDato) {
 		this.forventetAfsluttetDato = forventetAfsluttetDato;
 	}
+
+	public String getStatusPåStudiekontrol() {
+		return statusPåStudiekontrol;
+	}
+
+	public LocalDate getLejeaftalensUdløb() {
+		return lejeaftalensUdløb;
+	}
+
+	public void setLejeaftalensUdløb(LocalDate lejeaftalensUdløb) {
+		this.lejeaftalensUdløb = lejeaftalensUdløb;
+	}
+
+//	public void setStatusPåStudiekontrol(String statusPåStudiekontrol) {
+//		this.statusPåStudiekontrol = statusPåStudiekontrol; //TODO Tror ikke den skal bruges men ellers skal enum på status også ændres
+//	}
 
 }

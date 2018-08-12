@@ -3,18 +3,24 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import controller.ExcelConnection;
+
 /**
  * 
- * @author Janus Klassen anvendes ved oprettelse af dispensationer til en beboer
+ * @author Janus 
+ * Klassen anvendes ved oprettelse af dispensationer til en beboer
  *
  */
 
 public class Dispensation {
 	private Beboer beboer;
+	private String beboerNavn;
+	private String beboerVærelse;
 	private LocalDate startDato;
 	private LocalDate slutDato;
-	private ArrayList<Deadline> deadlines;
+	private ArrayList<Deadline> deadlines;//Skal den have dem eller bare referencen?
 	private String ID;
+	private String deadlineIDs; // Alternativ til deadlines
 	private boolean iGang;
 
 	/**
@@ -33,19 +39,21 @@ public class Dispensation {
 	 *            Denne parameter gives hvis ikke der gives et ID.
 	 */
 	public Dispensation(Beboer beboer, LocalDate startDato, LocalDate slutDato, boolean iGang, String ID,
-			ArrayList<Deadline> deadlines, ArrayList<Dispensation> dispensationer) {
+			ArrayList<Deadline> deadlines, ExcelConnection ec) {
 		this.beboer = beboer;
 		this.startDato = startDato;
 		this.slutDato = slutDato;
 		this.iGang = iGang;
 		this.deadlines = deadlines;
 		if (ID == null) {
-			ID = "disp" + dispensationer.size();
+			ID = "disp" + ec.getDispensationer().size();
+			//Bør have reference til Deadlines
 
 		} else {
 			this.ID = ID;
 		}
-
+		this.setBeboerNavn(beboer.getNavn());
+		this.setBeboerVærelse(beboer.getVærelse());
 	}
 
 	public String getID() {
@@ -112,6 +120,22 @@ public class Dispensation {
 			return s;
 		} else
 			return null;
+	}
+
+	public String getBeboerNavn() {
+		return beboerNavn;
+	}
+
+	public void setBeboerNavn(String beboerNavn) {
+		this.beboerNavn = beboerNavn;
+	}
+
+	public String getBeboerVærelse() {
+		return beboerVærelse;
+	}
+
+	public void setBeboerVærelse(String beboerVærelse) {
+		this.beboerVærelse = beboerVærelse;
 	}
 
 }
