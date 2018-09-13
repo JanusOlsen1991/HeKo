@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -477,7 +479,7 @@ public class GUI_PopUps {
 		stage.showAndWait();
 	}
 
-	public void startStudiekontrol(TableView<Beboer> tView, ExcelConnection ec) {
+	public void startStudiekontrol(TableView<Beboer> tView, ExcelConnection ec, TabPane tP) {
 		stage.setTitle("Påbegynd studiekontrol");
 
 		GridPane layout = new GridPane();
@@ -502,6 +504,7 @@ public class GUI_PopUps {
 		Button påbegyndButton = new Button("Påbegynd studiekontrol");
 		påbegyndButton.setOnAction(e -> {
 			// TODO Skal også skrives til Word
+
 			ArrayList<Beboer> temp = ec
 					.findBeboereTilOpretStudiekontrol(ec.findMånedsNummer(udløbsmåned.getValue().toString()));
 
@@ -515,6 +518,8 @@ public class GUI_PopUps {
 			tView.getItems().addAll(
 					ec.findBeboereTilOpretStudiekontrol(ec.findMånedsNummer(udløbsmåned.getValue().toString())));
 			tView.refresh();//TODO BEHØVES DEN?
+			Tab t = GUI.opretStudiekontrolTab(ec.getStudiekontroller().get(ec.getStudiekontroller().size()-1));
+			tP.getTabs().add(t);
 		});
 		Button annullerButton = new Button("Annuller");
 		annullerButton.setOnAction(e -> stage.close());
@@ -675,14 +680,25 @@ public class GUI_PopUps {
 		Button opretButton = new Button("Gem ændringer");
 		opretButton.setOnAction(e -> {
 			Værelsesudlejning vu = new Værelsesudlejning(overtagelsesdato.getValue(), værelse.getText(), null, null,
-					null);
+					null, null, ec);
 
 			ec.opretVærelsesudlejningIExcel(vu);
 			ec.getVærelsesudlejning().clear();
 			ec.hentVærelsesudlejningFraExcel();
 			tView.getItems().add(vu);
 			tView.refresh();
-
+			
+			//Opretter deadline til hovedmenu
+			String hvem = "Indstillingen";
+			String hvad = "Udlej værelse " + værelse.getText() + " til d. " + overtagelsesdato.getValue().toString();
+			LocalDate hvornår = overtagelsesdato.getValue().minusDays(14);
+			
+			Deadline d = new Deadline(hvem , hvad, hvornår, null, ec);
+			ec.opretDeadlineIExcel(d);
+			ec.getDeadlines().clear();
+			ec.hentDeadlinesFraExcel();
+			
+			
 			stage.close();
 		});
 		Button annullerButton = new Button("Annuller");
@@ -714,7 +730,7 @@ public class GUI_PopUps {
 	}
 
 	public void udfyldLedigtVærelse(ExcelConnection ec, TableView<Værelsesudlejning> tView1,
-			TableView<Værelsesudlejning> tView2, Værelsesudlejning værelsesudlejning) {
+			TableView<Værelsesudlejning> tView2, Værelsesudlejning værelsesudlejning, boolean retBeboerOplysninger) {
 		GridPane layout = new GridPane();
 
 		Label l1 = new Label("Værelse:");
@@ -748,16 +764,48 @@ public class GUI_PopUps {
 		ComboBox<String> studiekontrolStatus = new ComboBox<String>();
 		studiekontrolStatus.getItems().addAll("Ikke i gang", "Modtaget, ikke godkendt", "Ikke Modtaget",
 				"Sendt til boligselskab", "Godkendt");
-
+		if(retBeboerOplysninger == true) {
+			//TODO Udfyld de forskellige info
+			Beboer b = ec.findBeboer(værelse.getText());
+			navn.setText(b.getNavn());
+			indflytningsdato.setValue(b.getIndflytningsdato());
+			behandlingsdato.setValue(værelsesudlejning.getBehandlingsdato());
+			behandlerInit.setText(værelsesudlejning.getBehandlerInitialer());
+			telefonnummer.setText(b.getTelefonnummer());
+			uddannelsessted.setText(b.getUddannelsessted());
+			uddannelsesretning.setText(b.getUddannelsesretning());
+			uddStart.setValue(b.getPåbegyndtDato());
+			uddSlut.setValue(b.getForventetAfsluttetDato());
+			lejeaftalensUdløb.setValue(b.getLejeaftalensUdløb());
+			studiekontrolStatus.setValue(b.getStatusPåStudiekontrol());
+		}
+		
 		Button opretButton = new Button("Gem ændringer");
 		opretButton.setOnAction(e -> {
-			Værelsesudlejning vu = new Værelsesudlejning(indflytningsdato.getValue(), værelse.getText(), navn.getText(),
-					behandlingsdato.getValue(), behandlerInit.getText());
-
+			Værelsesudlejning vu;
+			//tjekker at værelsesnummer ikke er ændret
+//			if(værelsesudlejning.getNavn().equals(værelse.getText())) {
+			vu = new Værelsesudlejning(indflytningsdato.getValue(), værelse.getText(), navn.getText(),
+					behandlingsdato.getValue(), behandlerInit.getText(), værelsesudlejning.getID() , null);
+//			}
+//			else {
+//				vu = new Værelsesudlejning(indflytningsdato.getValue(), værelse.getText(), navn.getText(),
+//						behandlingsdato.getValue(), behandlerInit.getText(), null , ec);
+//			}
+			
 			ec.opretVærelsesudlejningIExcel(vu);
 			ec.getVærelsesudlejning().clear();
 			ec.hentVærelsesudlejningFraExcel();
+			
+//			Fjerner fra første TableView
+			ObservableList<Værelsesudlejning> værelseValgt, alleVærelser;
+			alleVærelser = tView1.getItems();
+			værelseValgt = tView1.getSelectionModel().getSelectedItems();
+			værelseValgt.forEach(alleVærelser::remove);
+			
+			
 			tView1.getItems().remove(vu);// evt. fremgangsmåde som vist ved
+			tView1.refresh();
 			tView2.getItems().add(vu);
 			tView2.refresh();
 			// Lejeaftalens udløb skal beregnes et sted.
@@ -769,6 +817,19 @@ public class GUI_PopUps {
 			ec.opretBeboerIExcel(b);
 			ec.getBeboere().clear();
 			ec.hentBeboereFraExcel();
+		
+//			else {
+//				//TODO evt. give ID til udlejning så den kan findes
+//				Værelsesudlejning vuNy
+//				værelsesudlejning.setBehandlerInitialer(behandlerInit.getText());
+//				værelsesudlejning.setBehandlingsdato(behandlingsdato.getValue());
+//				værelsesudlejning.setIndflytningsdato(indflytningsdato.getValue());
+//				værelsesudlejning.setNavn(navn.getText());
+//				tView2.refresh();
+//				ec.getVærelsesudlejning().clear();
+//				ec.hentVærelsesudlejningFraExcel();
+//				ec.opretVærelsesudlejningIExcel(værelsesudlejning);//TODO??
+//			}
 
 			stage.close();
 		});

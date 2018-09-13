@@ -23,10 +23,9 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-//		Scene scene = new Scene();
+
 		g.hovedMenu(primaryStage);
-//		primaryStage.setScene(scene);
-//		primaryStage.show();
+
 		
 	}
 }

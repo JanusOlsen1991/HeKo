@@ -2,12 +2,15 @@ package model;
 
 import java.time.LocalDate;
 
+import controller.ExcelConnection;
+
 public class Værelsesudlejning {
 	private LocalDate indflytningsdato;
 	private String værelse;
 	private String navn;
 	private LocalDate behandlingsdato;
 	private String behandlerInitialer;
+	private String ID;
 	/**
 	 * @param indflytningsdato : den dato hvor en ny beboer skal overtage et værelse
 	 * @param værelse : Værelsesnummer
@@ -16,12 +19,17 @@ public class Værelsesudlejning {
 	 * @param behandlerInitialer : initialerne på indstillingsrepræsentanten
 	 */
 	public Værelsesudlejning(LocalDate indflytningsdato, String værelse, String navn, LocalDate behandlingsdato,
-			String behandlerInitialer) {
+			String behandlerInitialer, String ID, ExcelConnection ec) {
 		this.indflytningsdato = indflytningsdato;
 		this.værelse = værelse;
 		this.navn = navn;
 		this.behandlingsdato = behandlingsdato;
 		this.behandlerInitialer = behandlerInitialer;
+		if(ID==null) {
+			this.ID = Integer.toString(ec.getVærelsesudlejning().size());
+		}
+		else 
+			this.ID=ID;
 	}
 
 	public LocalDate getIndflytningsdato() {
@@ -53,6 +61,14 @@ public class Værelsesudlejning {
 	}
 	public void setBehandlerInitialer(String behandlerInitialer) {
 		this.behandlerInitialer = behandlerInitialer;
+	}
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(String iD) {
+		ID = iD;
 	}
 
 }

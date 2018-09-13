@@ -34,8 +34,8 @@ import model.Værelsesudlejning;
 
 public class GUI {
 	private Scene scene;
-	ExcelConnection ec = new ExcelConnection();
-	GUI_PopUps popUp = new GUI_PopUps();
+	static ExcelConnection ec = new ExcelConnection();
+	static GUI_PopUps popUp = new GUI_PopUps();
 	GUI_PopUps_Deadlines popUpDead = new GUI_PopUps_Deadlines();
 
 	public GUI(ExcelConnection ec) {
@@ -70,7 +70,9 @@ public class GUI {
 		fremlejeButton.setOnAction(e -> fremlejeMenu(primaryStage));
 		Button værelsesudlejningsButton = new Button("Værelsesudlejning");
 		værelsesudlejningsButton.setOnAction(e -> værelsesUdlejningMenu(primaryStage));
-
+		
+		Label l = new Label("Ingen nuværende deadlines");
+		tView.setPlaceholder(l);
 		// Tilføjer buttons til venstre side.
 		venstreLayout.getChildren().addAll(beboerlisteButton, studieKontrolButton, dispensationsButton, fremlejeButton,
 				værelsesudlejningsButton);
@@ -195,21 +197,16 @@ public class GUI {
 					popUp.opretLedigtVærelse(ec, tView1);
 					tView1.refresh();
 				}
-			});
-			return row;
-		});
-		tView1.setRowFactory(tv -> {
-			TableRow<Værelsesudlejning> row = new TableRow<>();
-			row.setOnMouseClicked(event -> {
 				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
 					Værelsesudlejning clickedRow = row.getItem();
-					popUp.udfyldLedigtVærelse(ec, tView1, tView2, clickedRow);
+					popUp.udfyldLedigtVærelse(ec, tView1, tView2, clickedRow, false);
 					tView1.refresh();
 				}
 			});
 			return row;
 		});
+
 
 		TableColumn<Værelsesudlejning, String> værelseColumn = new TableColumn<Værelsesudlejning, String>("Værelse");
 		værelseColumn.setCellValueFactory(new PropertyValueFactory<>("værelse"));
@@ -236,6 +233,20 @@ public class GUI {
 				"Behandler Initialer");
 		behandlerInitialerColumn2.setCellValueFactory(new PropertyValueFactory<>("behandlerInitialer"));
 		tView2.setItems(getVærelsesUdlejning(false));
+		tView2.setRowFactory(tv -> {
+			TableRow<Værelsesudlejning> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+//TODO Lav noget her der retter info ved værelsesudlejning
+					Værelsesudlejning clickedRow = row.getItem();
+					popUp.udfyldLedigtVærelse(ec, tView1, tView2, clickedRow, true);
+					tView2.refresh();
+				}
+				
+			});
+			return row;
+		});
+		
 
 		tView1.getColumns().addAll(indflytningColumn, værelseColumn);
 		tView2.getColumns().addAll(indflytningColumn2, værelseColumn2, navnColumn2, behandletDatoColumn2,
@@ -426,10 +437,12 @@ public class GUI {
 
 		Button opretButton = new Button("Start ny studiekontrol");
 		opretButton.setOnAction(event -> {
-			popUp.startStudiekontrol(tView1, ec);
+			Tab t = opretStudiekontrolTab(ec.getStudiekontroller().get(ec.getStudiekontroller().size()-1));		
+			popUp.startStudiekontrol(tView1, ec, tP);
+			
+
+//			tP.getTabs().add(t);
 			//Henter sidste 
-			Tab t = opretStudiekontrolTab(ec.getStudiekontroller().get(ec.getStudiekontroller().size()-1));
-			tP.getTabs().add(t);
 			// TODO Der kommer til at være fejl i gui da den ikke opretter den nye tab med
 			// det samme - kan evt. oprette tab separat og returnere den
 		});
@@ -459,7 +472,7 @@ public class GUI {
 
 	}
 
-	private Tab opretStudiekontrolTab(Studiekontrol sk) {
+	public static Tab opretStudiekontrolTab(Studiekontrol sk) {
 		String s = ec.findMånedsNavn(sk.getMånedsnummer());
 		Tab t = new Tab(s);
 		t.setClosable(false);

@@ -390,9 +390,11 @@ System.out.println(startRække + "Her starter jeg");
 					behandlingsdato = null;
 
 				String behandlerinitialer = row.getCell(++kollonnenummer).getStringCellValue();
-
+				
+				String ID = row.getCell(++kollonnenummer).getStringCellValue();
 				Værelsesudlejning v = new Værelsesudlejning(indflytningsdato, værelse, navn, behandlingsdato,
-						behandlerinitialer);
+						behandlerinitialer, ID, null);
+				System.out.println( v.getID() + "Dette er mit ID");
 				værelsesudlejning.add(v);
 
 			}
@@ -825,6 +827,8 @@ System.out.println(startRække + "Her starter jeg");
 		row6.createCell(++start).setCellValue("Navn");
 		row6.createCell(++start).setCellValue("Behandlingsdato");
 		row6.createCell(++start).setCellValue("behandlerInitialer");
+		row6.createCell(++start).setCellValue("Udlejnings ID");
+
 
 		try {
 			FileOutputStream stream = new FileOutputStream(filnavn);
@@ -940,12 +944,17 @@ System.out.println(startRække + "Her starter jeg");
 
 			// Loop gennem excel dokumentet og find rækkepladsen
 			for (int i = startRække; i <= slutRække; i++) {
-				String sVærelse = workbook.getSheetAt(5).getRow(i).getCell(1).getStringCellValue(); // Hvilken celle?
-				String sNavn = workbook.getSheetAt(5).getRow(i).getCell(2).getStringCellValue(); // Hvilken celle?
-
+				//TODO både oprette id's og finde dem
+//				String sVærelse = workbook.getSheetAt(5).getRow(i).getCell(1).getStringCellValue(); // Hvilken celle?
+//				String sNavn = workbook.getSheetAt(5).getRow(i).getCell(2).getStringCellValue(); // Hvilken celle?
+				String idCheck = workbook.getSheetAt(5).getRow(i).getCell(5).getStringCellValue();
+System.out.println("?!?!?!?!?!?!?!?");
+System.out.println(idCheck);
+System.out.println(værelsesudlejning.getID() + " Er ID'et");
 				// Hvis det passer, så skriv til værelsesnummeret
-				if (sVærelse.equals(værelsesudlejning.getVærelse())) {
-					if (sNavn == null || sNavn.equals("")) { // Her bør der måsjke være ==.equals("");
+				if (idCheck.equals(værelsesudlejning.getID().toString())) {
+//					if (sNavn == null || sNavn.equals("")) {
+					System.out.println("!!!!!!!!!!");
 						int celleNr = 0;
 
 						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
@@ -954,17 +963,20 @@ System.out.println(startRække + "Her starter jeg");
 						++celleNr; // Går hen over værelsesnummeret
 
 						workbook.getSheetAt(5).getRow(i).getCell(++celleNr).setCellValue(værelsesudlejning.getNavn());
-
+						
 						Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
 						workbook.getSheetAt(5).getRow(i).createCell(++celleNr).setCellValue(d2); // TODO
 
 						workbook.getSheetAt(5).getRow(i).getCell(++celleNr)
 								.setCellValue(værelsesudlejning.getBehandlerInitialer());
+						
+						workbook.getSheetAt(5).getRow(i).getCell(++celleNr)
+						.setCellValue(værelsesudlejning.getID());
 
 						værelsesudlejningFindes = true;
 
 					}
-				}
+//				}
 			}
 			if (værelsesudlejningFindes == false) {
 				workbook.getSheetAt(5).createRow(slutRække + 1);
@@ -980,14 +992,14 @@ System.out.println(startRække + "Her starter jeg");
 																									// værelset ikke
 																									// skal udlejes
 
-				if (værelsesudlejning.getBehandlingsdato() != null) {
-					Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
-					workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d2);
-				} else
+//				if (værelsesudlejning.getBehandlingsdato() != null) {
+//					Date d2 = konverterLocalDateTilDate(værelsesudlejning.getBehandlingsdato());
+//					workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(d2);
+//				} else
 					++celleNr;
 
 				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(""); // Behandler
-																										// initialer er
+				workbook.getSheetAt(5).getRow(slutRække + 1).createCell(++celleNr).setCellValue(værelsesudlejning.getID());		// initialer er
 																										// = "" hvis
 																										// ikke det er
 																										// blevet
