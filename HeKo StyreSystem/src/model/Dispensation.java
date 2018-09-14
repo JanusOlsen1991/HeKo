@@ -20,9 +20,8 @@ public class Dispensation {
 	private LocalDate slutDato;
 	private ArrayList<Deadline> deadlines;//Skal den have dem eller bare referencen?
 	private String ID;
-	private String deadlineIDs; // Alternativ til deadlines
+//	private String deadlineIDs; // Alternativ til deadlines
 	private boolean iGang;
-
 	/**
 	 * @param beboer
 	 *            : beboeren der får dispensation

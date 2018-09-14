@@ -16,7 +16,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.util.SystemOutLogger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 //import javafx.scene.control.Cell;
@@ -117,9 +116,9 @@ public class ExcelConnection {
 			Workbook workbook = WorkbookFactory.create(fis);
 
 			int startRække = 1;// Starter på 1 for ikke at tage overskrifter med
-System.out.println(startRække + "Her starter jeg");
+
 			int slutRække = workbook.getSheetAt(1).getLastRowNum();
-			System.out.println(slutRække + " Her slutter jeg");
+
 			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(1).getRow(i);
 
@@ -152,7 +151,7 @@ System.out.println(startRække + "Her starter jeg");
 				Dispensation dispensation = new Dispensation(beboer, dispStart, dispSlut, iGang, dispID, dispDeadlines,
 						null);
 				dispensationer.add(dispensation);
-				System.out.println("Jeg komemr ind");
+
 			}
 			fis.close();
 			workbook.close();
@@ -208,7 +207,7 @@ System.out.println(startRække + "Her starter jeg");
 
 	}
 	public ArrayList<Beboer> findBeboereTilOpretStudiekontrol(int månedsnummer){
-		System.out.println("Dette er månedsnummer" + månedsnummer) ;
+
 		ArrayList<Beboer> temp = new ArrayList<Beboer>();
 		for(Beboer b: beboere) {
 			if (b.getLejeaftalensUdløb().getMonthValue() == månedsnummer) {//TODO evt. check om den tager forskellige år
@@ -229,7 +228,7 @@ System.out.println(startRække + "Her starter jeg");
 			int startRække = 1;// +1 for ikk at tageoverskriften med
 
 			int slutRække = workbook.getSheetAt(4).getLastRowNum();
-			System.out.println(slutRække);
+
 
 			// Opretter studiekontrolelementerne uden beboere der skal indgå
 			for (int i = startRække; i <= slutRække; i++) {
@@ -266,7 +265,7 @@ System.out.println(startRække + "Her starter jeg");
 			}//TODO lav til separat metode der kaldes i ovenstående loop
 			// tilføjer beboere til studiekontroller hvis der er nogen
 			if (studiekontroller.size() > 0) {
-				System.out.println(studiekontroller.size() + " er størrelsen");
+
 				for (int j = 0; j < studiekontroller.size(); j++) {
 					int måned = studiekontroller.get(j).getMånedsnummer();
 					ArrayList<Beboer> list = new ArrayList<Beboer>();
@@ -394,7 +393,7 @@ System.out.println(startRække + "Her starter jeg");
 				String ID = row.getCell(++kollonnenummer).getStringCellValue();
 				Værelsesudlejning v = new Værelsesudlejning(indflytningsdato, værelse, navn, behandlingsdato,
 						behandlerinitialer, ID, null);
-				System.out.println( v.getID() + "Dette er mit ID");
+
 				værelsesudlejning.add(v);
 
 			}
@@ -540,7 +539,7 @@ System.out.println(startRække + "Her starter jeg");
 				Beboer beboer = new Beboer(værelse, navn, fremlejeStartdato, fremlejeSlutdato, telefonnummer,
 						studiekontrolstatus, uddannelsessted, uddannelsesretning, uddStart, uddSlut);
 				this.fremlejere.add(beboer);
-				System.out.println(beboer.getNavn());
+
 
 			}
 			fis.close();
@@ -605,7 +604,7 @@ System.out.println(startRække + "Her starter jeg");
 			int startRække = 1;
 			int slutRække = workbook.getSheetAt(3).getLastRowNum();
 			boolean deadlineFindes = false;
-			System.out.println(slutRække);
+
 			// Loop gennem excel dokumentet og find rækkepladsen
 			// if(slutRække)
 			for (int i = startRække; i <= slutRække; i++) {
@@ -948,13 +947,10 @@ System.out.println(startRække + "Her starter jeg");
 //				String sVærelse = workbook.getSheetAt(5).getRow(i).getCell(1).getStringCellValue(); // Hvilken celle?
 //				String sNavn = workbook.getSheetAt(5).getRow(i).getCell(2).getStringCellValue(); // Hvilken celle?
 				String idCheck = workbook.getSheetAt(5).getRow(i).getCell(5).getStringCellValue();
-System.out.println("?!?!?!?!?!?!?!?");
-System.out.println(idCheck);
-System.out.println(værelsesudlejning.getID() + " Er ID'et");
+
 				// Hvis det passer, så skriv til værelsesnummeret
 				if (idCheck.equals(værelsesudlejning.getID().toString())) {
 //					if (sNavn == null || sNavn.equals("")) {
-					System.out.println("!!!!!!!!!!");
 						int celleNr = 0;
 
 						Date d1 = konverterLocalDateTilDate(værelsesudlejning.getIndflytningsdato());
@@ -1193,9 +1189,9 @@ System.out.println(værelsesudlejning.getID() + " Er ID'et");
 			Workbook workbook = WorkbookFactory.create(fis);
 
 			int startRække = 1;// Starter på 1 for ikke at tage overskrifter med
-			System.out.println("start " + startRække);
+
 			int slutRække = workbook.getSheetAt(0).getLastRowNum();
-			System.out.println("slut " + slutRække);
+
 			for (int i = startRække; i <= slutRække; i++) {
 				Row row = workbook.getSheetAt(0).getRow(i);
 
