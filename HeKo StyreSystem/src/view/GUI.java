@@ -1,7 +1,12 @@
 package view;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import controller.ExcelConnection;
@@ -15,11 +20,13 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import model.Beboer;
 import model.Deadline;
@@ -30,11 +37,11 @@ import model.Værelsesudlejning;
 
 public class GUI {
 	private Scene scene;
-	static ExcelConnection ec = new ExcelConnection();
+	static ExcelConnection ec;
 	static GUI_PopUps popUp = new GUI_PopUps();
 	GUI_PopUps_Deadlines popUpDead = new GUI_PopUps_Deadlines();
 
-	public GUI(ExcelConnection ec) {
+	public GUI() {
 		// this.ec = ec;
 	}
 
@@ -65,7 +72,7 @@ public class GUI {
 		fremlejeButton.setOnAction(e -> fremlejeMenu(primaryStage));
 		Button værelsesudlejningsButton = new Button("Værelsesudlejning");
 		værelsesudlejningsButton.setOnAction(e -> værelsesUdlejningMenu(primaryStage));
-		
+
 		Label l = new Label("Ingen nuværende deadlines");
 		tView.setPlaceholder(l);
 		// Tilføjer buttons til venstre side.
@@ -75,21 +82,20 @@ public class GUI {
 		// Buttons og "Påmindelser/deadlines" til højre side af menuen
 
 		TableColumn<Deadline, LocalDate> hvornårColumn = new TableColumn<Deadline, LocalDate>("Dato");
-		hvornårColumn.setCellValueFactory(new PropertyValueFactory<>("hvornår")); //  TODO ændr i format så dato bliver: dd/mm/yyyy 
-//		hvornårColumn.set
+		hvornårColumn.setCellValueFactory(new PropertyValueFactory<>("hvornår")); // TODO ændr i format så dato bliver:
+																					// dd/mm/yyyy
+		// hvornårColumn.set
 		TableColumn<Deadline, String> hvadColumn = new TableColumn<Deadline, String>("Hvad:");
 		hvadColumn.setCellValueFactory(new PropertyValueFactory<>("hvad"));
 		TableColumn<Deadline, String> hvemColumn = new TableColumn("Hvem:");
 		hvemColumn.setCellValueFactory(new PropertyValueFactory<>("hvem"));
 
 		tView.setItems(getDeadlines());
-		
 
 		tView.getColumns().addAll(hvornårColumn, hvadColumn, hvemColumn);
-		//Sorterer så første deadlines kommer først
+		// Sorterer så første deadlines kommer først
 		hvornårColumn.setSortType(TableColumn.SortType.ASCENDING);
 		tView.getSortOrder().add(hvornårColumn);
-
 
 		// Herunder oprettes en metode til at håndtere dobbeltklik og hente objekter
 		// (hel række)
@@ -127,6 +133,7 @@ public class GUI {
 		højreLayout.add(fjernButton, 4, 10);
 
 		scene = new Scene(borderP, 900, 700);
+//		scene.getStylesheets().add("hekostyling.css"); //TODO aktiver din Css
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -543,9 +550,9 @@ public class GUI {
 		ArrayList<Beboer> temp = new ArrayList<Beboer>();
 		for (Beboer b : alleBeboere) {
 			if (b.getStudiekontrolstatus() != Studiekontrolstatus.IKKEIGANG)
-				if(b.getStudiekontrolstatus() != Studiekontrolstatus.GODKENDT)
-					if(b.getStudiekontrolstatus() != Studiekontrolstatus.SENDTTILBOLIGSELSKAB)
-				temp.add(b);
+				if (b.getStudiekontrolstatus() != Studiekontrolstatus.GODKENDT)
+					if (b.getStudiekontrolstatus() != Studiekontrolstatus.SENDTTILBOLIGSELSKAB)
+						temp.add(b);
 		}
 		ObservableList<Beboer> alleStudiekontroller = FXCollections.observableArrayList(temp);
 		return alleStudiekontroller;
@@ -976,6 +983,88 @@ public class GUI {
 
 		ObservableList<Beboer> beboere = FXCollections.observableArrayList(temp);
 		return beboere;
+	}
+
+	public void filplacering(Stage primaryStage) {
+		// TODO hent filplacering fra txt, hvis denne ikke kan findes , da skal filen så
+		// oprettes på et sted og filplacering skal gemmes
+
+		GridPane gP = new GridPane();
+		Label l = new Label("Filplacering:");
+		TextField text = new TextField();
+		// finder fil-stien
+		String filename = "Excelplacering.txt";
+		String filepath = null;
+		try {
+
+			FileReader fileReader = new FileReader(filename);
+
+			// Always wrap FileReader in BufferedReader.
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+			filepath = bufferedReader.readLine();
+			text.setText(filepath);
+
+			bufferedReader.close();
+
+		} catch (Exception ex) {
+			//
+		}
+
+		Button findFilButton = new Button("Ændr filplacering");
+		findFilButton.setOnAction(event -> {
+			DirectoryChooser dir = new DirectoryChooser();
+			dir.setTitle("Vælg filplacering");
+			File excelplacering = dir.showDialog(primaryStage);
+			text.setText(excelplacering.getAbsolutePath() + "\\IndstillingsInfo.xlsx");
+
+		});
+
+		Button startButton = new Button("Start");
+		startButton.setOnAction(event -> {
+			String s = text.getText();
+			try {
+				GUI.ec = new ExcelConnection(s);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//Skriver  
+			try {
+				FileWriter fileWriter = new FileWriter(filename);
+
+				// Always wrap FileWriter in BufferedWriter.
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+				bufferedWriter.write(text.getText());
+
+				// Always close files.
+				bufferedWriter.close();
+			} catch (IOException ex1) {
+				
+			}
+				try {
+					hovedMenu(primaryStage);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+		});
+		Button annullerButton = new Button("Annuller");
+		annullerButton.setOnAction(event -> primaryStage.close());
+
+		gP.add(l, 3, 3);
+		gP.add(text, 3, 4);
+		// gP.add(labelFil, 5, 4);
+		gP.add(findFilButton, 4, 4);
+		gP.add(startButton, 3, 5);
+		gP.add(annullerButton, 4, 5);
+
+		Scene scene = new Scene(gP);
+		primaryStage.setScene(scene);
+		// The name of the file to open.
+
+		primaryStage.show();
 	}
 
 }

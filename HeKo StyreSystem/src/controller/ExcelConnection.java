@@ -1,7 +1,12 @@
 package controller;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -41,11 +46,32 @@ public class ExcelConnection {
 	private ArrayList<Studiekontrol> studiekontroller = new ArrayList<Studiekontrol>();
 	private ArrayList<Værelsesudlejning> værelsesudlejning = new ArrayList<Værelsesudlejning>();
 	private ArrayList<Dispensation> dispensationer = new ArrayList<Dispensation>();
-	private String filnavn = "IndstillingsInfo.xlsx";
+	private String filnavn = null; // "IndstillingsInfo.xlsx"; //TODO skal tage i mod filplaceringen i konstruktøren
 	// private String filnavn =
 	// "C:/Users/Janus/Dropbox/Indstillingen/Beboerliste/IndstillingsInfo.xlsx"; -
 	// Denne virker til DropBox Fra min PC
 
+	public ExcelConnection(String excelplacering) throws Exception{
+		this.filnavn = excelplacering;
+		
+		// TODO nødt til at finde på noget så det hele ikke slettes når den ikke kan finde filen
+				try (FileInputStream fis = new FileInputStream(filnavn)) {// evt. bare et tjek istedet for at oprette fis
+					hentBeboereFraExcel();
+					hentDeadlinesFraExcel();
+					hentFremlejerFraExcel();
+					hentDispensationerFraExcel();
+					hentStudiekontrollerfraExcel();
+					hentVærelsesudlejningFraExcel();
+
+					fis.close();
+				} catch (Exception e) {
+					System.out.println("Fil Oprettet");
+					e.printStackTrace();
+
+					createExcelFile();
+				}
+
+			}
 	public ArrayList<Dispensation> getDispensationer() {
 		return dispensationer;
 	}
@@ -90,25 +116,7 @@ public class ExcelConnection {
 		this.beboere = beboere;
 	}
 
-	public ExcelConnection() {
-// TODO nødt til at finde på noget så det hele ikke slettes når den ikke kan finde filen
-		try (FileInputStream fis = new FileInputStream(filnavn)) {// evt. bare et tjek istedet for at oprette fis
-			hentBeboereFraExcel(); // beboere oprettes
-			hentDeadlinesFraExcel();
-			hentFremlejerFraExcel();
-			hentDispensationerFraExcel();// Lav
-			hentStudiekontrollerfraExcel();
-			hentVærelsesudlejningFraExcel();
-
-			fis.close();
-		} catch (Exception e) {
-			System.out.println("Fil Oprettet");
-			e.printStackTrace();
-
-			createExcelFile();
-		}
-
-	}
+	
 
 	public void hentDispensationerFraExcel() {
 		try {

@@ -1,7 +1,12 @@
 package controller;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +32,47 @@ import model.Uddannelse;
 public class TestExcel {
 //This works i principle!
 	public static void main(String[] args) throws InvalidFormatException, EncryptedDocumentException, IOException {
-ExcelConnection ec = new ExcelConnection();
+//ExcelConnection ec = new ExcelConnection();
+		
+//		FileWriter fw;
+//		
+//		        try {
+//		
+//		            fw = new FileWriter(new File("mytextfile.txt"));
+//		
+//		             
+//		
+//		            fw.write(String.format("My name is %s.",name));
+//		
+//		            fw.write(System.lineSeparator()); //new line
+//		
+//		            fw.write(String.format("I am %d years old.",age));
+//		
+//		            fw.write(System.lineSeparator()); //new line
+//		
+//		            fw.write(String.format("Today's temperature is %.2f.",temp));
+//		
+//		            fw.write(System.lineSeparator()); //new line
+//		
+//		            fw.close();
+//		
+//		        } catch (IOException ex) {
+//		
+//		            ex.printStackTrace();
+//		
+//		        }
+		
+		         
+
+		
+		
+
+		
+		
+		
+		
+		
+		
 //LocalDate d = LocalDate.now();
 //Uddannelse uddannelse = new Uddannelse("DTU", "Ingeniør", d, d);
 //Beboer janus = new Beboer("Janus", "422", uddannelse, d, d, "28459844", Studiekontrolstatus.GODKENDT);
@@ -51,12 +96,12 @@ ExcelConnection ec = new ExcelConnection();
 //Deadline deadline3 = new Deadline("201", "Bold I morgen", d, null);
 //deadline3.setKlaret(true);
 //ec.opretDeadlineIExcel(deadline3);
-char c = '1';
-char c2 = '5';
-if(c == c2)
-	System.out.println("match");
-else
-	System.out.println("no match");
+//char c = '1';
+//char c2 = '5';
+//if(c == c2)
+//	System.out.println("match");
+//else
+//	System.out.println("no match");
 
 
 ////		//Metode herunder skal anvendes til at opdatere og skrive til excel
