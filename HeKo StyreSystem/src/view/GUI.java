@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import controller.ExcelConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -25,7 +27,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import model.Beboer;
@@ -53,12 +57,19 @@ public class GUI {
 	 */
 
 	public void hovedMenu(Stage primaryStage) throws Exception {
-		BorderPane borderP = new BorderPane();
+		
 		primaryStage.setTitle("Herlevkollegiets Indstillingsudvalg");
-		VBox venstreLayout = new VBox();
+		VBox venstreLayout = new VBox(5);
+		venstreLayout.setPadding(new Insets(30,20,0,10));
+		
+		
 		GridPane højreLayout = new GridPane();
-		borderP.setLeft(venstreLayout);
-		borderP.setCenter(højreLayout);
+		højreLayout.setVgap(5);
+		højreLayout.setHgap(10);
+		HBox hb = new HBox(venstreLayout, højreLayout);
+
+//		borderP.setLeft(venstreLayout);
+//		borderP.setCenter(højreLayout);
 
 		TableView<Deadline> tView = new TableView<Deadline>();
 		// Buttons til venstre side af menuen
@@ -75,19 +86,20 @@ public class GUI {
 
 		Label l = new Label("Ingen nuværende deadlines");
 		tView.setPlaceholder(l);
+		tView.setMinWidth(600);
 		// Tilføjer buttons til venstre side.
 		venstreLayout.getChildren().addAll(beboerlisteButton, studieKontrolButton, dispensationsButton, fremlejeButton,
 				værelsesudlejningsButton);
 
 		// Buttons og "Påmindelser/deadlines" til højre side af menuen
 
-		TableColumn<Deadline, LocalDate> hvornårColumn = new TableColumn<Deadline, LocalDate>("Dato");
-		hvornårColumn.setCellValueFactory(new PropertyValueFactory<>("hvornår")); // TODO ændr i format så dato bliver:
-																					// dd/mm/yyyy
-		// hvornårColumn.set
+		TableColumn<Deadline, LocalDate> hvornårColumn = new TableColumn<Deadline, LocalDate>("Hvornår");
+		hvornårColumn.setCellValueFactory(new PropertyValueFactory<>("hvornår")); 
+		
 		TableColumn<Deadline, String> hvadColumn = new TableColumn<Deadline, String>("Hvad:");
 		hvadColumn.setCellValueFactory(new PropertyValueFactory<>("hvad"));
-		TableColumn<Deadline, String> hvemColumn = new TableColumn("Hvem:");
+		
+		TableColumn<Deadline, String> hvemColumn = new TableColumn<Deadline, String>("Hvem:");
 		hvemColumn.setCellValueFactory(new PropertyValueFactory<>("hvem"));
 
 		tView.setItems(getDeadlines());
@@ -132,8 +144,8 @@ public class GUI {
 		højreLayout.add(tilføjButton, 2, 10);
 		højreLayout.add(fjernButton, 4, 10);
 
-		scene = new Scene(borderP, 900, 700);
-//		scene.getStylesheets().add("hekostyling.css"); //TODO aktiver din Css
+		scene = new Scene(hb, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -172,6 +184,7 @@ public class GUI {
 		});
 
 		VBox vb = new VBox(tilbageButton);
+		vb.setPadding(new Insets(0,10,0,0));
 		borderP.setLeft(vb);
 
 		// Midten
@@ -260,6 +273,7 @@ public class GUI {
 		tab2.setContent(tView2);
 
 		scene = new Scene(borderP, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
 	}
 
@@ -355,6 +369,7 @@ public class GUI {
 		tP.getTabs().add(tab1);
 
 		scene = new Scene(borderP, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
 	}
 
@@ -463,8 +478,9 @@ public class GUI {
 			}
 
 		scene = new Scene(borderP, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
-
+		
 	}
 
 	public static Tab opretStudiekontrolTab(Studiekontrol sk) {
@@ -871,6 +887,7 @@ public class GUI {
 
 		tP.getTabs().addAll(tab1, tab2, tab3, tab4, tab5, tab6);
 		scene = new Scene(borderP, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
 	}
 
@@ -967,6 +984,7 @@ public class GUI {
 		borderP.setCenter(tView);
 
 		scene = new Scene(borderP, 900, 700);
+		scene.getStylesheets().add("hekostyling.css");
 		primaryStage.setScene(scene);
 	}
 
@@ -1062,6 +1080,7 @@ public class GUI {
 
 		Scene scene = new Scene(gP);
 		primaryStage.setScene(scene);
+		
 		// The name of the file to open.
 
 		primaryStage.show();

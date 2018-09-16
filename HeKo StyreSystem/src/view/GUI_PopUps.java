@@ -21,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Beboer;
 import model.Deadline;
@@ -37,10 +38,11 @@ public class GUI_PopUps {
 	public void opretNyBeboeroplysninger(ExcelConnection ec, TableView<Beboer> tView1, TableView<Beboer> tView2,
 			TableView<Beboer> tView3, TableView<Beboer> tView4, TableView<Beboer> tView5, TableView<Beboer> tView6) {
 		stage.setTitle("Rediger beboeroplysninger");
-		// stage.initModality(Modality.APPLICATION_MODAL);
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
-
+		layout.setHgap(5);
+		layout.setVgap(5);
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Navn:");
 		Label l3 = new Label("Indflytningsdato:");
@@ -142,16 +144,18 @@ public class GUI_PopUps {
 		layout.setPrefSize(500, 700);
 
 		Scene scene = new Scene(layout);
+
 		stage.setScene(scene);
 		stage.showAndWait();
 	}
 
 	public void opretNyFremlejer(ExcelConnection ec, TableView<Beboer> tView) {
 		stage.setTitle("Opret Fremlejer");
-		// stage.initModality(Modality.APPLICATION_MODAL);
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
-
+		layout.setVgap(5);
+		layout.setHgap(5);
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Navn:");
 		Label l3 = new Label("Indflytningsdato:");
@@ -223,12 +227,13 @@ public class GUI_PopUps {
 
 	@SuppressWarnings("unchecked")
 	public void opretDispensation(ExcelConnection ec, TableView<Dispensation> tableView,
-			TableView<Deadline> tViewHMenu, Dispensation dispensation, boolean rediger) {// TableView<Dispensation> tView -> anavendes evt. hvis hovedmenu deadlines
-												// også skal opdateres
+			TableView<Deadline> tViewHMenu, Dispensation dispensation, boolean rediger) {
 		stage.setTitle("Rediger beboeroplysninger");
-		// stage.initModality(Modality.APPLICATION_MODAL);
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
+		layout.setVgap(5);
+		layout.setHgap(5);
 
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Navn:");
@@ -242,6 +247,7 @@ public class GUI_PopUps {
 		TextField værelse = new TextField();
 		TextField navn = new TextField();
 		TextArea begrundelse = new TextArea();
+		begrundelse.setMaxSize(250, 100);
 		DatePicker startDato = new DatePicker();
 		DatePicker slutDato = new DatePicker();
 		TextField formandsNavn = new TextField();
@@ -412,8 +418,11 @@ public class GUI_PopUps {
 
 	public void redigerBeboeroplysninger(Beboer beboer, ExcelConnection ec, TableView<Beboer> tView, boolean studieK) {
 		stage.setTitle("Rediger beboeroplysninger");
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
+		layout.setHgap(5);
+		layout.setVgap(5);
 
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Navn:");
@@ -522,9 +531,12 @@ public class GUI_PopUps {
 
 	public void startStudiekontrol(TableView<Beboer> tView, ExcelConnection ec, TabPane tP) {
 		stage.setTitle("Påbegynd studiekontrol");
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
 		layout.setPrefSize(600, 300);
+		layout.setHgap(5);
+		layout.setVgap(5);
 
 		// Valgmuligheder og labels for at påbegynde studiekontrol oprettes
 
@@ -563,7 +575,7 @@ public class GUI_PopUps {
 			tP.getTabs().add(t);
 			
 			//laver deadlines til hovedmenu:
-			String påmind = "Påmind beboere der indgår i " + udløbsmåned.getValue().toString() + " om at de skal aflevere studiedokumentaion senest d. " + afleveringsfrist.getValue().toString();
+			String påmind = "Påmind beboere der indgår i " + udløbsmåned.getValue().toString() + "s studiekontrol om at de skal aflevere studiedokumentaion senest d. " + afleveringsfrist.getValue().toString();
 			String afslut = " Afslut studiekontrol for " + udløbsmåned.getValue().toString();
 			
 			Deadline dPåmind = new Deadline("Indstillingen", påmind, påmindelsesdato.getValue(), null, ec);
@@ -604,9 +616,11 @@ public class GUI_PopUps {
 	 */
 	public void modtagetStudiekontrol() {
 		stage.setTitle("Studiekontrol for beboer:");
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
-
+		layout.setHgap(5);
+		layout.setVgap(5);
 		Label l1 = new Label("Værelse");
 		Label l2 = new Label("Navn");
 		Label l3 = new Label("Uddannelsessted");
@@ -654,8 +668,11 @@ public class GUI_PopUps {
 
 	public void afslutStudiekontrol(Studiekontrol studiekontrol, ExcelConnection ec, TableView<Beboer> tView, Tab t) {
 		stage.setTitle("Afslut studiekontrol for " + studiekontrol.getStudiekontrolID());
-		GridPane layout = new GridPane();
-
+//		 stage.initModality(Modality.APPLICATION_MODAL);
+		 GridPane layout = new GridPane();
+		 layout.setHgap(5);
+		 layout.setVgap(5);
+		 
 		TableColumn<Beboer, String> værelse = new TableColumn<Beboer, String>("Værelse");
 		værelse.setCellValueFactory(new PropertyValueFactory<>("værelse"));
 		TableColumn<Beboer, String> navn = new TableColumn<Beboer, String>("Navn");
@@ -726,10 +743,11 @@ public class GUI_PopUps {
 
 	public void opretLedigtVærelse(ExcelConnection ec, TableView<Værelsesudlejning> tView) {
 		stage.setTitle("Rediger beboeroplysninger");
-		// stage.initModality(Modality.APPLICATION_MODAL);
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		GridPane layout = new GridPane();
-
+		layout.setVgap(5);
+		layout.setHgap(5);
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Overtagelsesdato:");
 
@@ -782,15 +800,13 @@ public class GUI_PopUps {
 		stage.showAndWait();
 	}
 
-	public void redigerDispensation(Dispensation clickedRow, ExcelConnection ec, TableView<Dispensation> tView,
-			TableView<Deadline> tViewHMenu) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void udfyldLedigtVærelse(ExcelConnection ec, TableView<Værelsesudlejning> tView1,
 			TableView<Værelsesudlejning> tView2, Værelsesudlejning værelsesudlejning, boolean retBeboerOplysninger) {
+		
 		GridPane layout = new GridPane();
+		layout.setVgap(5);
+		layout.setHgap(5);
+//		 stage.initModality(Modality.APPLICATION_MODAL);
 
 		Label l1 = new Label("Værelse:");
 		Label l2 = new Label("Navn:");
@@ -877,18 +893,7 @@ public class GUI_PopUps {
 			ec.getBeboere().clear();
 			ec.hentBeboereFraExcel();
 		
-//			else {
-//				//TODO evt. give ID til udlejning så den kan findes
-//				Værelsesudlejning vuNy
-//				værelsesudlejning.setBehandlerInitialer(behandlerInit.getText());
-//				værelsesudlejning.setBehandlingsdato(behandlingsdato.getValue());
-//				værelsesudlejning.setIndflytningsdato(indflytningsdato.getValue());
-//				værelsesudlejning.setNavn(navn.getText());
-//				tView2.refresh();
-//				ec.getVærelsesudlejning().clear();
-//				ec.hentVærelsesudlejningFraExcel();
-//				ec.opretVærelsesudlejningIExcel(værelsesudlejning);//TODO??
-//			}
+
 
 			stage.close();
 		});
@@ -927,7 +932,7 @@ public class GUI_PopUps {
 		// Sætter buttons på layout
 		layout.add(opretButton, 3, 39);
 		layout.add(annullerButton, 5, 39);
-		layout.setPrefSize(500, 200);
+		layout.setPrefSize(500, 670);
 
 		Scene scene = new Scene(layout);
 		stage.setScene(scene);
