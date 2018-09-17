@@ -550,6 +550,7 @@ public class GUI_PopUps {
 		Label l2 = new Label("Startdato");
 		Label l3 = new Label("Påmindelsesdato");
 		Label l4 = new Label("Afleveringsfrist/Afslutningsdato");
+		Label l5 = new Label("Filplacering");
 
 		DatePicker startDato = new DatePicker();
 		startDato.setValue(LocalDate.now());
@@ -559,13 +560,24 @@ public class GUI_PopUps {
 		udløbsmåned.getItems().addAll("Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August",
 				"September", "Oktober", "November", "December");
 		udløbsmåned.setValue(ec.findMånedsNavn((LocalDate.now().getMonthValue() + 4) % 12));
+		TextField text = new TextField();
+		
+		Button filStiButton = new Button("Vælg filplacering");
+		filStiButton.setOnAction(event -> {
+			DirectoryChooser dir = new DirectoryChooser();
+			dir.setTitle("Vælg filplacering");
+			File excelplacering = dir.showDialog(stage);
+			text.setText(excelplacering.getAbsolutePath());
+		});
 
 		Button påbegyndButton = new Button("Påbegynd studiekontrol");
 		påbegyndButton.setOnAction(e -> {
-			// TODO Skal også skrives til Word eller excel
+
 
 			ArrayList<Beboer> temp = ec
 					.findBeboereTilOpretStudiekontrol(ec.findMånedsNummer(udløbsmåned.getValue().toString()));
+			
+			ec.createStudiekontrolsExcelFile(text.getText()+ "\\"+udløbsmåned.getValue().toString()+"Studiekontrol.xlsx", temp);
 
 			Studiekontrol studiekontrol = new Studiekontrol(temp, afleveringsfrist.getValue(),
 					påmindelsesdato.getValue(), startDato.getValue(),
@@ -602,15 +614,19 @@ public class GUI_PopUps {
 		layout.add(l2, 6, 3);
 		layout.add(l3, 9, 3);
 		layout.add(l4, 12, 3);
+		layout.add(l5, 15, 3);
 
 		layout.add(udløbsmåned, 3, 5);
 		layout.add(startDato, 6, 5);
 		layout.add(påmindelsesdato, 9, 5);
 		layout.add(afleveringsfrist, 12, 5);
+		layout.add(text, 15, 5);
+		layout.add(filStiButton, 18, 5);
 
 		layout.add(påbegyndButton, 9, 7);
 		layout.add(annullerButton, 12, 7);
 
+		layout.setMinSize(1300, 200);
 		Scene scene = new Scene(layout);
 		stage.setScene(scene);
 		stage.show();
@@ -764,7 +780,6 @@ public class GUI_PopUps {
 		layout.add(hb, 8, 5);
 //		layout.add(findFilButton, 9, 5);
 //		layout.add(filepath, 8, 5);
-		
 		Scene scene = new Scene(layout);
 		stage.setScene(scene);
 		stage.show();

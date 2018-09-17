@@ -61,15 +61,14 @@ public class GUI {
 		primaryStage.setTitle("Herlevkollegiets Indstillingsudvalg");
 		VBox venstreLayout = new VBox(5);
 		venstreLayout.setPadding(new Insets(30,20,0,10));
-		
+		venstreLayout.setMinWidth(150);
 		
 		GridPane højreLayout = new GridPane();
 		højreLayout.setVgap(5);
+
 		højreLayout.setHgap(10);
 		HBox hb = new HBox(venstreLayout, højreLayout);
-
-//		borderP.setLeft(venstreLayout);
-//		borderP.setCenter(højreLayout);
+		hb.setMinWidth(1500);
 
 		TableView<Deadline> tView = new TableView<Deadline>();
 		// Buttons til venstre side af menuen
@@ -86,7 +85,7 @@ public class GUI {
 
 		Label l = new Label("Ingen nuværende deadlines");
 		tView.setPlaceholder(l);
-		tView.setMinWidth(600);
+		tView.setMinWidth(1100);
 		// Tilføjer buttons til venstre side.
 		venstreLayout.getChildren().addAll(beboerlisteButton, studieKontrolButton, dispensationsButton, fremlejeButton,
 				værelsesudlejningsButton);
