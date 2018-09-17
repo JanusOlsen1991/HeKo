@@ -1,11 +1,14 @@
 package view;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import controller.ExcelConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -21,6 +24,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Beboer;
@@ -556,7 +562,7 @@ public class GUI_PopUps {
 
 		Button påbegyndButton = new Button("Påbegynd studiekontrol");
 		påbegyndButton.setOnAction(e -> {
-			// TODO Skal også skrives til Word
+			// TODO Skal også skrives til Word eller excel
 
 			ArrayList<Beboer> temp = ec
 					.findBeboereTilOpretStudiekontrol(ec.findMånedsNummer(udløbsmåned.getValue().toString()));
@@ -683,27 +689,41 @@ public class GUI_PopUps {
 		TableView<Beboer> tView2 = new TableView();
 		tView2.getColumns().addAll(værelse, navn, studiekontrolStatus);
 		
+		Label l = new Label("Hvor skal filen sendes til?");
+		TextField filepath = new TextField();
+		Button findFilButton = new Button("Vælg filplacering");
+		findFilButton.setOnAction(event -> {
+			DirectoryChooser dir = new DirectoryChooser();
+			dir.setTitle("Vælg filplacering");
+			File excelplacering = dir.showDialog(stage);
+			filepath.setText(excelplacering.getAbsolutePath());
+
+		});
 		//TODO kan laves til separat metode
 		ObservableList<Beboer> beboere = tView.getItems();
 		ObservableList<Beboer> beboereOpsiges = FXCollections.observableArrayList();
+		ArrayList<Beboer> beboereTilFil = new ArrayList<Beboer>();
 		ObservableList<Beboer> beboereOpsigesIkke = FXCollections.observableArrayList();
 
 		for(Beboer b: beboere) {
-			if(b.getStudiekontrolstatus()!= Studiekontrolstatus.GODKENDT) //&&Status != IKKEIGANG
+			if(b.getStudiekontrolstatus()!= Studiekontrolstatus.GODKENDT ) { //&&Status != IKKEIGANG
 				beboereOpsiges.add(b);
-			else //TODO Check om den virker
+			beboereTilFil.add(b);
+			} else
 				beboereOpsigesIkke.add(b);
 		}
 		tView2.getItems().addAll(beboereOpsiges);
 		
 		Label l1 = new Label("Er du sikker på du vil afslutte studiekontrollen for " + studiekontrol.getStudiekontrolID()
 				+ "\nog sende de herunder listede beboeres oplysninger videre til boligselskabet?");
+		
 		Button jaButton = new Button("Ja");
 		jaButton.setOnAction(event -> {
 			// TODO skriv navnene til fil så de kan sendes til KAB - ÆNDR alle deres
-			// STUDIEKONTROLSTATUS til SENDTTILBOLIGSELSKAB
+			ec.createStudiekontrolsExcelFile(filepath.getText()+ "\\beboereOpsiges.xlsx", beboereTilFil);
+
 			// TODO REDIGER studiekontrolsobjektet til afsluttet i excel
-//			Studiekontrol sk = studiekontrol; // - Evt. oprette objektet
+
 			String måned = t.getText();
 			t.setText(måned + "(afsluttet)");
 			studiekontrol.setAfsluttet(true);
@@ -731,11 +751,20 @@ public class GUI_PopUps {
 		
 		
 		layout.add(l1, 3, 3, 5, 1);
-
-		layout.add(tView2, 3, 4, 3, 1);
-		layout.add(jaButton, 4, 6);
-		layout.add(nejButton, 6, 6);
-
+		layout.add(tView2, 3, 4, 3, 2);
+		layout.add(jaButton, 4, 7);
+		layout.add(nejButton, 6, 7);
+		
+		VBox vb = new VBox(l, filepath);
+		//Højre side //QuickFix
+		VBox vbh = new VBox(findFilButton);
+		vbh.setPadding(new Insets(20,0,0,0));
+		
+		HBox hb = new HBox(vb, vbh);
+		layout.add(hb, 8, 5);
+//		layout.add(findFilButton, 9, 5);
+//		layout.add(filepath, 8, 5);
+		
 		Scene scene = new Scene(layout);
 		stage.setScene(scene);
 		stage.show();

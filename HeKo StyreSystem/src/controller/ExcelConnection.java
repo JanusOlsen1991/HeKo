@@ -849,6 +849,61 @@ public class ExcelConnection {
 		}
 
 	}
+	public void createStudiekontrolsExcelFile(String filplacering, ArrayList<Beboer> beboere) {
+		Workbook wb = new XSSFWorkbook();
+		int start = 0;
+
+		// Overskrifter til Beboerliste sheet
+		Sheet sheet1 = wb.createSheet("Beboerliste");
+		Row row1 = sheet1.createRow(0);
+
+		row1.createCell(start).setCellValue("Værelse");
+		row1.createCell(++start).setCellValue("Navn");
+		row1.createCell(++start).setCellValue("Udløbsmåned på lejeaftale");
+		
+
+
+		try {
+			FileOutputStream stream = new FileOutputStream(filplacering);
+			wb.write(stream);
+			stream.close();
+			wb.close();
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//Skriver beboere til excelfil
+		for(int i = 0; i< beboere.size(); i++) {
+			Beboer beboer = beboere.get(i);
+			skrivBeboereTilStudiekontrol(beboer, filplacering);
+		}
+		
+	}
+	private void skrivBeboereTilStudiekontrol(Beboer beboer, String filnavn) {
+		try {
+			FileInputStream fis = new FileInputStream(filnavn);
+			Workbook workbook = WorkbookFactory.create(fis);
+			int slutRække = workbook.getSheetAt(0).getLastRowNum();
+
+
+				workbook.getSheetAt(0).createRow(slutRække + 1);
+				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(0).setCellValue(beboer.getVærelse());
+				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(1).setCellValue(beboer.getNavn());
+				workbook.getSheetAt(0).getRow(slutRække + 1).createCell(2).setCellValue(beboer.getLejeaftalensUdløb().getMonth().toString());//
+
+
+			
+			fis.close();
+
+			// save your changes to the same file.
+			workbook.write(new FileOutputStream(filnavn));
+			workbook.close();
+			
+	} catch(Exception e) {
+		e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Metoden tjekker først om værelset findes. og ellers skriver den
